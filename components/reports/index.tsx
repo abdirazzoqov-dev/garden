@@ -5,9 +5,10 @@ import { motion } from "motion/react";
 import {
   BarChart3, TrendingUp, TrendingDown, Download,
   Calendar, DollarSign, ShoppingBag, Users, Package,
-  ArrowUpRight, ArrowDownRight, Filter,
+  ArrowUpRight, ArrowDownRight, GitCompareArrows,
 } from "lucide-react";
 import type { Transaction, Product, Employee, Stall, Order } from "../types";
+import ComparisonReport from "./ComparisonReport";
 import { PRODUCT_CATEGORY_META, STALL_TYPE_META } from "../constants";
 import { formatNumber } from "../utils";
 
@@ -42,8 +43,7 @@ export default function ReportsTab({
   transactions, orders, products, employees, stalls,
 }: ReportsTabProps) {
   const [range,      setRange]      = useState<DateRange>("today");
-  const [startDate,  setStartDate]  = useState("");
-  const [endDate,    setEndDate]    = useState("");
+  const [activeView, setActiveView] = useState<"analytics" | "comparison">("analytics");
 
   // ── Computed metrics ────────────────────────────────────────
 
@@ -157,6 +157,20 @@ export default function ReportsTab({
         </div>
 
         <div className="flex items-center gap-2">
+          {/* View toggle: Analytics vs Comparison */}
+          <div className="flex items-center gap-1 p-1 bg-[#f0ede8] rounded-xl border border-[#dedad3]">
+            <button onClick={() => setActiveView("analytics")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-[700] transition-all
+                ${activeView === "analytics" ? "bg-white text-[#1e3d1f] shadow-sm border border-[#dedad3]" : "text-[#637063]"}`}>
+              <BarChart3 className="w-3.5 h-3.5" /> Tahlil
+            </button>
+            <button onClick={() => setActiveView("comparison")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-[700] transition-all
+                ${activeView === "comparison" ? "bg-white text-[#1e3d1f] shadow-sm border border-[#dedad3]" : "text-[#637063]"}`}>
+              <GitCompareArrows className="w-3.5 h-3.5" /> Solishtirma
+            </button>
+          </div>
+
           {/* Date range selector */}
           <div className="flex items-center gap-1 p-1 bg-[#f0ede8] rounded-xl border border-[#dedad3]">
             {(["today","week","month"] as DateRange[]).map((r) => (
@@ -169,12 +183,19 @@ export default function ReportsTab({
           </div>
 
           {/* Export */}
-          <button onClick={exportCSV}
-            className="btn btn-secondary btn-sm">
+          <button onClick={exportCSV} className="btn btn-secondary btn-sm">
             <Download className="w-3.5 h-3.5" /> CSV
           </button>
         </div>
       </div>
+
+      {/* ── Comparison view ── */}
+      {activeView === "comparison" && (
+        <ComparisonReport transactions={transactions} stalls={stalls} />
+      )}
+
+      {/* ── Analytics view ── */}
+      {activeView === "analytics" && (<>
 
       {/* ── KPI Summary Cards ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -566,6 +587,9 @@ export default function ReportsTab({
           </table>
         </div>
       </div>
+
+      </>)} {/* end analytics view */}
     </motion.div>
   );
 }
+

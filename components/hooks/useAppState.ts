@@ -19,8 +19,16 @@ import type {
   Table, TableStatus, Order, OrderItem, OrderStatus, OrderType,
   Discount, Customer, LoyaltyTransaction, LoyaltyTier,
 } from "../types";
+import { useNotifications } from "./useNotifications";
+import { useDarkMode }       from "./useDarkMode";
 
 export function useAppState() {
+  // ── Dark mode ─────────────────────────────────────────────────
+  const { isDark, toggle: toggleDark } = useDarkMode();
+
+  // ── Notifications ─────────────────────────────────────────────
+  const notif = useNotifications();
+
   // ── Navigation ────────────────────────────────────────────────
   const [activeTab,        setActiveTab]        = useState<ActiveTab>("pos");
   const [blueprintSubTab,  setBlueprintSubTab]  = useState<BlueprintSubTab>("prisma");
@@ -29,6 +37,13 @@ export function useAppState() {
 
   // ── Network ───────────────────────────────────────────────────
   const [isOnline, setIsOnline] = useState(true);
+
+  // ── Day-close modal ───────────────────────────────────────────
+  const [dayCloseOpen, setDayCloseOpen] = useState(false);
+
+  // ── Receipt modal ─────────────────────────────────────────────
+  const [receiptTransaction, setReceiptTransaction] = useState<Transaction | null>(null);
+  const [receiptOrder,       setReceiptOrder]       = useState<Order | null>(null);
 
   // ── Core data ─────────────────────────────────────────────────
   const [stalls,       setStalls]       = useState<Stall[]>(INITIAL_STALLS);
@@ -110,6 +125,12 @@ export function useAppState() {
           type: "warning",
         }, ...prev];
       });
+      notif.push(
+        "⚠ Zaxira ogohlantirish",
+        `${item.name}: ${item.stock} ${item.unit ?? "dona"} qoldi — ${item.stallName}`,
+        "warning",
+        { actionLabel: "Boshqaruvga o'tish", actionTab: "management" }
+      );
     }, 5000);
     return () => clearTimeout(t);
   }, [products]);
@@ -498,6 +519,14 @@ export function useAppState() {
     );
     setTransactions((prev) => [newTxn, ...prev]);
 
+    // Notify
+    notif.push(
+      "Sotuv muvaffaqiyatli",
+      `${employee.name} — ${formatNumber(amount)} so'm (${stall.name})`,
+      "success",
+      { actionLabel: "Hisobotni ko'rish", actionTab: "reports" }
+    );
+
     // Increment discount usage
     if (appliedDiscountId) {
       setDiscounts((prev) =>
@@ -725,6 +754,23 @@ export function useAppState() {
     handleAddCustomer, handleUpdateCustomer, handleDeleteCustomer,
     handleToggleCustomerActive,
     handleAddLoyaltyPoints, handleRedeemLoyaltyPoints,
+
+    // ── New features ──────────────────────────────────────────
+    // Dark mode
+    isDark, toggleDark,
+    // Notifications
+    notifications: notif.notifications,
+    unreadCount:   notif.unreadCount,
+    pushNotif:     notif.push,
+    markNotifRead:    notif.markRead,
+    markAllNotifsRead: notif.markAllRead,
+    dismissNotif:  notif.dismiss,
+    clearAllNotifs:notif.clearAll,
+    // Day close
+    dayCloseOpen, setDayCloseOpen,
+    // Receipt
+    receiptTransaction, setReceiptTransaction,
+    receiptOrder,       setReceiptOrder,
   };
 }
 
