@@ -19,7 +19,7 @@ import type {
   Table, TableStatus, Order, OrderItem, OrderStatus, OrderType,
   Discount, Customer, LoyaltyTransaction, LoyaltyTier,
 } from "../types";
-import { useNotifications } from "./useNotifications";
+import { useNotifications } from "../notifications/useNotifications";
 import { useDarkMode }       from "./useDarkMode";
 
 export function useAppState() {
