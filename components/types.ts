@@ -116,6 +116,7 @@ export interface Employee {
   id: string;
   name: string;
   role: EmployeeRole;
+  stallId?: string;         // biriktirilgan rasta
   baseSalary: number;
   bonusPercentage: number;
   isCheckedIn: boolean;
@@ -178,6 +179,33 @@ export interface PayrollResult {
 
 // ── Auth ──────────────────────────────────────────────────────
 export type PendingActionType = "switch_seller" | "check_toggle";
+
+// ── Multi-user auth ───────────────────────────────────────────
+export interface AuthUser {
+  id:         string;        // employee id
+  name:       string;
+  role:       EmployeeRole;
+  username:   string;
+  stallId?:   string;        // biriktirilgan rasta (SELLER/WAITER/CHEF/ATTENDANT)
+  stallName?: string;
+  avatar:     string;        // name first char
+}
+
+/** Har bir rol uchun ruxsat etilgan tablar va default tab */
+export interface RoleAccess {
+  allowedTabs: ActiveTab[];
+  defaultTab:  ActiveTab;
+  stallScoped: boolean;      // true = faqat o'z rastasini ko'radi
+}
+
+export const ROLE_ACCESS: Record<EmployeeRole, RoleAccess> = {
+  ADMIN:     { allowedTabs: ["stalls","pos","orders","kds","dashboard","reports","hr","customers","discounts","management","blueprint"], defaultTab: "stalls",    stallScoped: false },
+  MANAGER:   { allowedTabs: ["stalls","pos","orders","kds","dashboard","reports","hr","customers","discounts","management"],             defaultTab: "stalls",    stallScoped: false },
+  SELLER:    { allowedTabs: ["stalls","pos"],                                                                                            defaultTab: "pos",       stallScoped: true  },
+  WAITER:    { allowedTabs: ["stalls","orders"],                                                                                         defaultTab: "stalls",    stallScoped: true  },
+  CHEF:      { allowedTabs: ["kds"],                                                                                                     defaultTab: "kds",       stallScoped: true  },
+  ATTENDANT: { allowedTabs: ["stalls","pos"],                                                                                            defaultTab: "stalls",    stallScoped: true  },
+};
 
 // ── Customer / Loyalty ───────────────────────────────────────
 export type LoyaltyTier = "BRONZE" | "SILVER" | "GOLD" | "PLATINUM";

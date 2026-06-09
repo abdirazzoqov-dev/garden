@@ -71,12 +71,13 @@ export const INITIAL_STALLS: Stall[] = [
 
 // ── Initial Employees ─────────────────────────────────────────
 export const INITIAL_EMPLOYEES: Employee[] = [
-  { id: "emp_1", name: "Dilshod Abdirazzokov", role: "MANAGER",   baseSalary: 6500000, bonusPercentage: 2, isCheckedIn: true,  lastCheckIn: "08:30", username: "dilshod", password: "111" },
-  { id: "emp_2", name: "Shahzod Alimov",       role: "SELLER",    baseSalary: 3500000, bonusPercentage: 5, isCheckedIn: true,  lastCheckIn: "08:45", username: "shahzod", password: "222" },
-  { id: "emp_3", name: "Laylo Karimova",        role: "SELLER",    baseSalary: 3200000, bonusPercentage: 7, isCheckedIn: false,                        username: "laylo",   password: "333" },
-  { id: "emp_4", name: "Jamshid Tojiyev",       role: "ATTENDANT", baseSalary: 4000000, bonusPercentage: 4, isCheckedIn: true,  lastCheckIn: "08:50", username: "jamshid", password: "444" },
-  { id: "emp_5", name: "Zulfiya Yusupova",      role: "WAITER",    baseSalary: 2800000, bonusPercentage: 6, isCheckedIn: true,  lastCheckIn: "09:00", username: "zulfiya", password: "555" },
-  { id: "emp_6", name: "Bobur Raximov",         role: "CHEF",      baseSalary: 5000000, bonusPercentage: 3, isCheckedIn: true,  lastCheckIn: "08:00", username: "bobur",   password: "666" },
+  { id: "emp_1", name: "Dilshod Abdirazzokov", role: "MANAGER",   stallId: undefined,  baseSalary: 6500000, bonusPercentage: 2, isCheckedIn: true,  lastCheckIn: "08:30", username: "dilshod", password: "111" },
+  { id: "emp_2", name: "Shahzod Alimov",       role: "SELLER",    stallId: "stall_1",  baseSalary: 3500000, bonusPercentage: 5, isCheckedIn: true,  lastCheckIn: "08:45", username: "shahzod", password: "222" },
+  { id: "emp_3", name: "Laylo Karimova",        role: "SELLER",    stallId: "stall_5",  baseSalary: 3200000, bonusPercentage: 7, isCheckedIn: false,                        username: "laylo",   password: "333" },
+  { id: "emp_4", name: "Jamshid Tojiyev",       role: "ATTENDANT", stallId: "stall_3",  baseSalary: 4000000, bonusPercentage: 4, isCheckedIn: true,  lastCheckIn: "08:50", username: "jamshid", password: "444" },
+  { id: "emp_5", name: "Zulfiya Yusupova",      role: "WAITER",    stallId: "stall_2",  baseSalary: 2800000, bonusPercentage: 6, isCheckedIn: true,  lastCheckIn: "09:00", username: "zulfiya", password: "555" },
+  { id: "emp_6", name: "Bobur Raximov",         role: "CHEF",      stallId: "stall_1",  baseSalary: 5000000, bonusPercentage: 3, isCheckedIn: true,  lastCheckIn: "08:00", username: "bobur",   password: "666" },
+  { id: "emp_7", name: "Admin",                 role: "ADMIN",     stallId: undefined,  baseSalary: 8000000, bonusPercentage: 0, isCheckedIn: true,  lastCheckIn: "08:00", username: "admin",   password: "admin" },
 ];
 
 // ── Initial Products ──────────────────────────────────────────
