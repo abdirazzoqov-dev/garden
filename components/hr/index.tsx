@@ -4,7 +4,12 @@ import { motion } from "motion/react";
 import EmployeeList from "./EmployeeList";
 import AttendanceLog from "./AttendanceLog";
 import PayrollPanel from "./PayrollPanel";
-import type { Employee, AttendanceLog as AttendanceLogType, PayrollResult, PendingActionType } from "../types";
+import type {
+  Employee,
+  AttendanceLog as AttendanceLogType,
+  PayrollResult,
+  PendingActionType,
+} from "../types";
 
 interface HRTabProps {
   employees: Employee[];
@@ -13,14 +18,19 @@ interface HRTabProps {
   onOpenAuth: (empId: string, action: PendingActionType) => void;
 }
 
-export default function HRTab({ employees, attendanceLogs, calculatePayroll, onOpenAuth }: HRTabProps) {
+export default function HRTab({
+  employees,
+  attendanceLogs,
+  calculatePayroll,
+  onOpenAuth,
+}: HRTabProps) {
   return (
     <motion.div
       key="hr"
-      initial={{ opacity: 0, y: 14 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -14 }}
-      transition={{ duration: 0.22 }}
+      exit={{ opacity: 0, y: -12 }}
+      transition={{ duration: 0.2 }}
       className="grid grid-cols-1 lg:grid-cols-12 gap-6"
     >
       {/* Left col — employees + attendance */}

@@ -1,5 +1,6 @@
 "use client";
 
+import { UserCheck, UserX, Zap } from "lucide-react";
 import { formatNumber } from "../utils";
 import type { Employee, PayrollResult, PendingActionType } from "../types";
 
@@ -16,96 +17,131 @@ const ROLE_LABEL: Record<string, string> = {
   ADMIN:     "Admin",
 };
 
+const ROLE_STYLE: Record<string, string> = {
+  MANAGER:   "bg-violet-50 text-violet-700 border-violet-100",
+  SELLER:    "bg-blue-50 text-blue-700 border-blue-100",
+  ATTENDANT: "bg-amber-50 text-amber-700 border-amber-100",
+  ADMIN:     "bg-rose-50 text-rose-700 border-rose-100",
+};
+
 export default function EmployeeList({ employees, calculatePayroll, onOpenAuth }: EmployeeListProps) {
   return (
-    <div className="bg-white p-6 rounded-2xl border border-[#DAD7CD] shadow-sm">
-      <div className="flex items-center justify-between mb-5 pb-3 border-b border-[#F2F4EF]">
+    <div className="card overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-[#f0ede8]">
         <div>
-          <h4 className="text-sm font-bold text-[#2D452E] uppercase tracking-wider">
-            Xodimlar Davomati va Boshqaruvi
-          </h4>
-          <p className="text-[10px] text-[#588157] mt-0.5">
-            Kirish va chiqish vaqtlarini belgilash (Check-In / Out)
-          </p>
+          <h4 className="text-sm font-[700] text-[#1e3d1f]">Xodimlar boshqaruvi</h4>
+          <p className="text-[11px] text-[#637063] mt-0.5">Check-In / Check-Out nazorati</p>
         </div>
-        <span className="text-[10px] bg-[#F2F4EF] text-[#2D452E] py-1 px-2.5 rounded-full font-mono font-bold border border-[#DAD7CD]">
-          {employees.length} xodim
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="badge badge-green">
+            {employees.filter((e) => e.isCheckedIn).length} faol
+          </span>
+          <span className="badge badge-slate">
+            {employees.length} jami
+          </span>
+        </div>
       </div>
 
-      <div className="space-y-3">
+      {/* Employee cards */}
+      <div className="divide-y divide-[#f7f5f2]">
         {employees.map((emp) => {
-          const { totalWage } = calculatePayroll(emp);
+          const { totalWage, salesVolume, bonusAmount } = calculatePayroll(emp);
           return (
             <div
               key={emp.id}
-              className="bg-[#F2F4EF]/50 p-4 rounded-xl border border-[#DAD7CD] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+              className={`
+                flex flex-col sm:flex-row items-start sm:items-center gap-4 px-6 py-4
+                transition-colors hover:bg-[#f7f5f2]/60
+                ${!emp.isCheckedIn ? "opacity-60" : ""}
+              `}
             >
-              <div className="flex items-start gap-3 flex-1 min-w-0">
-                {/* Status dot */}
-                <div className="pt-1 shrink-0">
-                  <div
-                    className={`h-3 w-3 rounded-full ${
-                      emp.isCheckedIn ? "bg-emerald-500 animate-pulse" : "bg-gray-300"
-                    }`}
-                  />
+              {/* Avatar + status dot */}
+              <div className="relative shrink-0">
+                <div className={`
+                  w-10 h-10 rounded-full flex items-center justify-center
+                  text-sm font-[800]
+                  ${emp.isCheckedIn
+                    ? "bg-[#d8edda] text-[#1e3d1f]"
+                    : "bg-[#f0ede8] text-[#9daa9e]"
+                  }
+                `}>
+                  {emp.name.charAt(0)}
+                </div>
+                <span className={`
+                  absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white
+                  ${emp.isCheckedIn ? "bg-emerald-500" : "bg-slate-300"}
+                `} />
+              </div>
+
+              {/* Info */}
+              <div className="flex-1 min-w-0 space-y-1.5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-sm font-[700] text-[#1e3d1f]">{emp.name}</p>
+                  <span className={`badge border ${ROLE_STYLE[emp.role] ?? "bg-slate-50 text-slate-600 border-slate-100"}`}>
+                    {ROLE_LABEL[emp.role] ?? emp.role}
+                  </span>
+                  {emp.isCheckedIn ? (
+                    <span className="text-[10px] font-mono text-emerald-600 font-[700]">
+                      ↑ {emp.lastCheckIn}
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-[#9daa9e] font-[600]">Nofaol</span>
+                  )}
                 </div>
 
-                <div className="min-w-0">
-                  {/* Name + role */}
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <h4 className="text-sm font-bold text-[#2D452E]">{emp.name}</h4>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#A3B18A]/20 text-[#2D452E] border border-[#DAD7CD] font-bold">
-                      {ROLE_LABEL[emp.role] ?? emp.role}
-                    </span>
-                  </div>
+                {/* Stats row */}
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px]">
+                  <span className="text-[#637063]">
+                    KPI: <strong className="text-[#1e3d1f]">{emp.bonusPercentage}%</strong>
+                  </span>
+                  <span className="text-[#637063]">
+                    Sotuv: <strong className="text-[#1e3d1f] font-mono">{formatNumber(salesVolume)} so'm</strong>
+                  </span>
+                  <span className="flex items-center gap-1 text-[#637063]">
+                    <Zap className="w-3 h-3 text-amber-500" />
+                    Bonus: <strong className="text-amber-700 font-mono">+{formatNumber(bonusAmount)} so'm</strong>
+                  </span>
+                </div>
 
-                  {/* Attendance + KPI */}
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[10px] text-[#588157] mt-1">
-                    {emp.isCheckedIn ? (
-                      <span className="text-emerald-700 font-bold font-mono">
-                        Check-in: {emp.lastCheckIn ?? "—"}
-                      </span>
-                    ) : (
-                      <span className="text-gray-400 font-mono font-bold">Nofaol rejimda</span>
-                    )}
-                    <span>·</span>
-                    <span>
-                      KPI Bonus:{" "}
-                      <strong className="text-[#3A5A40] font-mono">{emp.bonusPercentage}%</strong>
-                    </span>
-                    <span>·</span>
-                    <span>
-                      Bugungi hisob:{" "}
-                      <strong className="text-[#2D452E]">{formatNumber(totalWage)} so'm</strong>
-                    </span>
-                  </div>
-
-                  {/* Credentials */}
-                  <div className="flex items-center gap-2 mt-1.5 text-[10px]">
-                    <span className="text-[#588157]">🔑 Login:</span>
-                    <code className="bg-[#A3B18A]/20 font-bold px-1.5 py-0.5 rounded text-[#2D452E] font-mono">
-                      {emp.username}
-                    </code>
-                    <span className="text-[#588157]">Parol:</span>
-                    <code className="bg-[#A3B18A]/20 font-bold px-1.5 py-0.5 rounded text-[#2D452E] font-mono">
-                      {emp.password}
-                    </code>
-                  </div>
+                {/* Credentials */}
+                <div className="flex items-center gap-3 text-[10px]">
+                  <span className="text-[#9daa9e]">Login:</span>
+                  <code className="font-mono font-[700] bg-[#f0ede8] text-[#283028] px-1.5 py-0.5 rounded-md">
+                    {emp.username}
+                  </code>
+                  <span className="text-[#9daa9e]">Parol:</span>
+                  <code className="font-mono font-[700] bg-[#f0ede8] text-[#283028] px-1.5 py-0.5 rounded-md">
+                    {emp.password}
+                  </code>
                 </div>
               </div>
 
-              {/* Check-in/out button */}
-              <button
-                onClick={() => onOpenAuth(emp.id, "check_toggle")}
-                className={`py-2 px-4 rounded-xl text-xs font-bold transition-all shrink-0 ${
-                  emp.isCheckedIn
-                    ? "bg-amber-100 text-amber-800 border border-amber-200 hover:bg-amber-200"
-                    : "bg-[#2D452E] hover:bg-[#3A5A40] text-white"
-                }`}
-              >
-                {emp.isCheckedIn ? "Check-Out" : "Check-In"}
-              </button>
+              {/* Right side: wage + button */}
+              <div className="flex flex-col items-end gap-2 shrink-0">
+                <div className="text-right">
+                  <p className="text-[10px] text-[#9daa9e] font-[600]">Bugungi hisob</p>
+                  <p className="text-sm font-[800] text-[#1e3d1f] font-mono">
+                    {formatNumber(totalWage)} <span className="text-[10px] font-[600] text-[#637063]">so'm</span>
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => onOpenAuth(emp.id, "check_toggle")}
+                  className={`
+                    btn btn-sm flex items-center gap-1.5
+                    ${emp.isCheckedIn
+                      ? "btn-danger"
+                      : "btn-primary"
+                    }
+                  `}
+                >
+                  {emp.isCheckedIn
+                    ? <><UserX className="w-3.5 h-3.5" /> Check-Out</>
+                    : <><UserCheck className="w-3.5 h-3.5" /> Check-In</>
+                  }
+                </button>
+              </div>
             </div>
           );
         })}

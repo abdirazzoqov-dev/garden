@@ -7,63 +7,101 @@ interface TransactionTableProps {
   transactions: Transaction[];
 }
 
+const METHOD_STYLE: Record<string, string> = {
+  CASH:   "bg-emerald-50  text-emerald-700  border-emerald-100",
+  CARD:   "bg-blue-50     text-blue-700     border-blue-100",
+  MOBILE: "bg-violet-50   text-violet-700   border-violet-100",
+};
+
+const METHOD_LABEL: Record<string, string> = {
+  CASH:   "Naqd",
+  CARD:   "Terminal",
+  MOBILE: "Click/Payme",
+};
+
 export default function TransactionTable({ transactions }: TransactionTableProps) {
   return (
-    <div className="bg-white p-6 rounded-2xl border border-[#DAD7CD] shadow-sm">
-      <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#F2F4EF]">
-        <h4 className="text-sm font-bold text-[#2D452E] uppercase tracking-wider">
-          Tranzaksiyalar va Sotuvlar Daftari
-        </h4>
-        <span className="text-[10px] font-mono text-[#588157] bg-[#F2F4EF] px-2.5 py-1 rounded-full border border-[#DAD7CD] font-semibold">
-          PostgreSQL Billing replica
-        </span>
+    <div className="card overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-[#f0ede8]">
+        <div>
+          <h4 className="text-sm font-[700] text-[#1e3d1f]">Tranzaksiyalar daftari</h4>
+          <p className="text-[11px] text-[#637063] mt-0.5">PostgreSQL billing replika</p>
+        </div>
+        <span className="badge badge-slate font-mono">{transactions.length} ta yozuv</span>
       </div>
 
+      {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs">
+        <table className="data-table">
           <thead>
-            <tr className="border-b border-[#F2F4EF] text-[#588157] text-[10px] uppercase tracking-wider font-bold">
-              <th className="py-3 pr-3 font-semibold">ID</th>
-              <th className="py-3 pr-3 font-semibold">Vaqt</th>
-              <th className="py-3 pr-3 font-semibold">Rasta</th>
-              <th className="py-3 pr-3 font-semibold">Xodim</th>
-              <th className="py-3 pr-3 font-semibold hidden md:table-cell">Tovarlar</th>
-              <th className="py-3 pr-3 font-semibold">To'lov</th>
-              <th className="py-3 pr-3 font-semibold text-right">Summa</th>
-              <th className="py-3 font-semibold text-center">Status</th>
+            <tr>
+              <th>ID</th>
+              <th>Vaqt</th>
+              <th>Rasta</th>
+              <th>Sotuvchi</th>
+              <th className="hidden lg:table-cell">Mahsulotlar</th>
+              <th>To'lov</th>
+              <th className="text-right">Summa</th>
+              <th className="text-center">Holat</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#F2F4EF]">
+          <tbody>
             {transactions.map((t) => (
-              <tr key={t.id} className="hover:bg-[#F2F4EF]/40 transition-colors">
-                <td className="py-3 pr-3 font-mono text-[#588157] font-semibold text-[10px]">
-                  {t.id}
+              <tr key={t.id}>
+                {/* ID */}
+                <td>
+                  <span className="font-mono text-[11px] text-[#9daa9e] font-[600]">{t.id}</span>
                 </td>
-                <td className="py-3 pr-3 text-[#588157]">{t.createdAt}</td>
-                <td className="py-3 pr-3 font-bold text-[#2D452E] max-w-[100px] truncate">
-                  {t.stallName}
+
+                {/* Time */}
+                <td>
+                  <span className="font-mono text-[11px] text-[#637063]">{t.createdAt}</span>
                 </td>
-                <td className="py-3 pr-3 text-[#2D452E] font-bold">{t.employeeName}</td>
-                <td className="py-3 pr-3 text-[#588157] hidden md:table-cell max-w-[160px] truncate">
-                  {t.items.map((i) => `${i.productName} (×${i.quantity})`).join(", ")}
+
+                {/* Stall */}
+                <td>
+                  <p className="font-[700] text-[#1e3d1f] max-w-[100px] truncate text-xs">{t.stallName}</p>
                 </td>
-                <td className="py-3 pr-3">
-                  <span className="text-[10px] px-2 py-0.5 rounded-full font-mono bg-[#F2F4EF] text-[#2D452E] font-bold border border-[#DAD7CD]">
-                    {t.paymentMethod}
+
+                {/* Employee */}
+                <td>
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-[#d8edda] text-[#1e3d1f] flex items-center justify-center text-[10px] font-[800] shrink-0">
+                      {t.employeeName.charAt(0)}
+                    </div>
+                    <span className="text-xs font-[600] text-[#283028]">{t.employeeName}</span>
+                  </div>
+                </td>
+
+                {/* Items */}
+                <td className="hidden lg:table-cell">
+                  <p className="text-[11px] text-[#637063] max-w-[180px] truncate">
+                    {t.items.map((i) => `${i.productName} ×${i.quantity}`).join(", ")}
+                  </p>
+                </td>
+
+                {/* Payment */}
+                <td>
+                  <span className={`badge text-[10px] border ${METHOD_STYLE[t.paymentMethod] ?? "bg-slate-50 text-slate-600 border-slate-100"}`}>
+                    {METHOD_LABEL[t.paymentMethod] ?? t.paymentMethod}
                   </span>
                 </td>
-                <td className="py-3 pr-3 text-right font-black font-mono text-[#3A5A40]">
-                  {formatNumber(t.amount)}
+
+                {/* Amount */}
+                <td className="text-right">
+                  <span className="text-sm font-[800] text-[#1e3d1f] font-mono">
+                    {formatNumber(t.amount)}
+                  </span>
+                  <span className="text-[10px] text-[#9daa9e] ml-1">so'm</span>
                 </td>
-                <td className="py-3 text-center">
+
+                {/* Status */}
+                <td className="text-center">
                   {t.syncStatus === "SYNCED" ? (
-                    <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200 whitespace-nowrap">
-                      ✓ Sinxron
-                    </span>
+                    <span className="badge badge-green">✓ Sinxron</span>
                   ) : (
-                    <span className="text-[9px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-200 animate-pulse whitespace-nowrap">
-                      ⏳ Kutilmoqda
-                    </span>
+                    <span className="badge badge-amber animate-pulse">⏳ Kutilmoqda</span>
                   )}
                 </td>
               </tr>

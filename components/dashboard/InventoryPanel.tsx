@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle } from "lucide-react";
+import { Package, AlertTriangle, CheckCircle2 } from "lucide-react";
 import type { Product } from "../types";
 
 interface InventoryPanelProps {
@@ -8,64 +8,88 @@ interface InventoryPanelProps {
 }
 
 export default function InventoryPanel({ products }: InventoryPanelProps) {
+  const critical = products.filter((p) => p.stock <= p.minStockAlert).length;
+
   return (
-    <div className="bg-white p-6 rounded-2xl border border-[#DAD7CD] shadow-sm flex flex-col">
-      <div className="flex items-center justify-between mb-5">
+    <div className="card p-6 flex flex-col gap-4">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-3">
         <div>
-          <h4 className="text-sm font-bold text-[#2D452E] uppercase tracking-wider">
-            Ombor Qoldiqlari Monitoringi
-          </h4>
-          <p className="text-[10px] text-[#588157] mt-0.5">
-            Kam qolayotgan tovarlarni o'z vaqtida ta'minlash ogohlantirishlari
-          </p>
+          <h4 className="text-sm font-[700] text-[#1e3d1f]">Ombor monitoringi</h4>
+          <p className="text-[11px] text-[#637063] mt-0.5">Zaxira qoldiqlari holati</p>
         </div>
-        <span className="text-xs px-2.5 py-1 rounded-full bg-amber-100 border border-amber-200 text-amber-800 font-bold flex items-center gap-1 shrink-0">
-          <AlertTriangle className="h-3 w-3" /> Re-stock
-        </span>
+        {critical > 0 ? (
+          <span className="badge badge-amber">
+            <AlertTriangle className="w-3 h-3" />
+            {critical} ta kam
+          </span>
+        ) : (
+          <span className="badge badge-green">
+            <CheckCircle2 className="w-3 h-3" />
+            Yaxshi
+          </span>
+        )}
       </div>
 
-      <div className="space-y-2.5 max-h-[260px] overflow-y-auto pr-1">
+      {/* Product list */}
+      <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1">
         {products.map((p) => {
-          const isWarning = p.stock <= p.minStockAlert;
-          const pct = Math.min(100, (p.stock / 150) * 100);
+          const isEmpty  = p.stock <= 0;
+          const isLow    = !isEmpty && p.stock <= p.minStockAlert;
+          const isOk     = !isEmpty && !isLow;
+          const fillPct  = Math.min(100, (p.stock / Math.max(p.minStockAlert * 4, 1)) * 100);
 
           return (
             <div
               key={p.id}
-              className="bg-[#F2F4EF]/50 p-3 rounded-xl border border-[#DAD7CD] flex items-center gap-3"
+              className={`
+                flex items-center gap-3 p-3 rounded-xl border transition-all
+                ${isEmpty ? "bg-slate-50 border-slate-200"
+                  : isLow  ? "bg-amber-50 border-amber-100"
+                  : "bg-[#f7f5f2] border-[#f0ede8]"
+                }
+              `}
             >
-              <div className="flex-1 min-w-0">
-                <h5 className="text-xs font-bold text-[#2D452E] truncate">{p.name}</h5>
-                <p className="text-[9px] text-[#588157] font-semibold mt-0.5 truncate">
-                  {p.stallName}
-                </p>
+              {/* Icon */}
+              <div className={`p-1.5 rounded-lg shrink-0
+                ${isEmpty ? "bg-slate-100 text-slate-400"
+                  : isLow  ? "bg-amber-100 text-amber-600"
+                  : "bg-[#eef7ef] text-[#4d8751]"
+                }
+              `}>
+                <Package className="w-3.5 h-3.5" />
               </div>
 
-              {/* Progress bar (hidden on small screens) */}
-              <div className="flex-1 max-w-[100px] hidden md:block">
-                <div className="h-1.5 w-full bg-[#DAD7CD]/40 rounded-full overflow-hidden">
+              {/* Info */}
+              <div className="flex-1 min-w-0 space-y-1">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-[700] text-[#1e3d1f] truncate">{p.name}</p>
+                  <span className={`text-[10px] font-[700] font-mono px-2 py-0.5 rounded-full shrink-0
+                    ${isEmpty ? "bg-slate-100 text-slate-500"
+                      : isLow  ? "bg-amber-100 text-amber-800"
+                      : "bg-[#eef7ef] text-[#1e3d1f]"
+                    }
+                  `}>
+                    {p.stock} dona
+                  </span>
+                </div>
+
+                {/* Progress bar */}
+                <div className="h-1 w-full bg-white/70 rounded-full overflow-hidden border border-[#f0ede8]">
                   <div
-                    className={`h-full rounded-full transition-all duration-500 ${
-                      isWarning ? "bg-amber-500" : "bg-[#3A5A40]"
-                    }`}
-                    style={{ width: `${pct}%` }}
+                    className={`h-full rounded-full transition-all duration-500
+                      ${isEmpty ? "w-0"
+                        : isLow  ? "bg-amber-400"
+                        : "bg-[#4d8751]"
+                      }
+                    `}
+                    style={{ width: `${fillPct}%` }}
                   />
                 </div>
-              </div>
 
-              <div className="flex items-center gap-1.5 shrink-0">
-                <span
-                  className={`text-xs font-mono font-bold px-2 py-0.5 rounded-full border ${
-                    isWarning
-                      ? "text-amber-800 bg-amber-100 border-amber-200"
-                      : "text-[#2D3A2D] bg-[#DAD7CD]/30 border-[#DAD7CD]"
-                  }`}
-                >
-                  {p.stock} dona
-                </span>
-                <span className="text-[9px] text-[#588157] font-mono hidden sm:inline">
-                  min:{p.minStockAlert}
-                </span>
+                <p className="text-[10px] text-[#9daa9e] font-[500]">
+                  Min chegara: {p.minStockAlert} · {p.stallName}
+                </p>
               </div>
             </div>
           );

@@ -1,5 +1,6 @@
 "use client";
 
+import { Clock } from "lucide-react";
 import type { AttendanceLog as AttendanceLogType } from "../types";
 
 interface AttendanceLogProps {
@@ -8,40 +9,58 @@ interface AttendanceLogProps {
 
 export default function AttendanceLog({ logs }: AttendanceLogProps) {
   return (
-    <div className="bg-white p-6 rounded-2xl border border-[#DAD7CD] shadow-sm">
-      <h4 className="text-xs uppercase tracking-wider font-bold text-[#2D452E] mb-4">
-        Davomat jurnali (Attendance Log)
-      </h4>
+    <div className="card overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-[#f0ede8]">
+        <div className="flex items-center gap-2">
+          <Clock className="w-4 h-4 text-[#4d8751]" />
+          <h4 className="text-sm font-[700] text-[#1e3d1f]">Davomat jurnali</h4>
+        </div>
+        <span className="badge badge-slate font-mono">{logs.length} ta yozuv</span>
+      </div>
 
-      <div className="max-h-[240px] overflow-y-auto pr-1">
-        <table className="w-full text-left text-xs font-mono">
+      {/* Log table */}
+      <div className="max-h-[260px] overflow-y-auto">
+        <table className="data-table">
           <thead>
-            <tr className="text-[#588157] border-b border-[#F2F4EF] text-[10px] uppercase font-bold">
-              <th className="py-2.5 pr-3">Xodim ismi</th>
-              <th className="py-2.5 pr-3">Lavozimi</th>
-              <th className="py-2.5 pr-3">Amal Turi</th>
-              <th className="py-2.5 text-right">Vaqt</th>
+            <tr>
+              <th>Xodim</th>
+              <th>Lavozim</th>
+              <th>Harakat</th>
+              <th className="text-right">Vaqt</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#F2F4EF]">
+          <tbody>
             {logs.map((log, i) => (
-              <tr key={log.id ?? i} className="hover:bg-[#F2F4EF]/40 transition-colors">
-                <td className="py-2.5 pr-3 font-sans font-bold text-[#2D452E]">
-                  {log.employeeName}
+              <tr key={log.id ?? i}>
+                {/* Name */}
+                <td>
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-[#d8edda] text-[#1e3d1f] flex items-center justify-center text-[10px] font-[800] shrink-0">
+                      {log.employeeName.charAt(0)}
+                    </div>
+                    <span className="font-[700] text-[#1e3d1f] text-xs">{log.employeeName}</span>
+                  </div>
                 </td>
-                <td className="py-2.5 pr-3 text-[#588157]">{log.role}</td>
-                <td className="py-2.5 pr-3">
+
+                {/* Role */}
+                <td>
+                  <span className="text-xs text-[#637063] font-[500]">{log.role}</span>
+                </td>
+
+                {/* Type */}
+                <td>
                   {log.type === "KIRISH" ? (
-                    <span className="text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full text-[9px] font-bold border border-emerald-200">
-                      ↑ KIRISH
-                    </span>
+                    <span className="badge badge-green">↑ Kirish</span>
                   ) : (
-                    <span className="text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full text-[9px] font-bold border border-amber-200">
-                      ↓ CHIQISH
-                    </span>
+                    <span className="badge badge-amber">↓ Chiqish</span>
                   )}
                 </td>
-                <td className="py-2.5 text-right text-[#588157]">{log.time}</td>
+
+                {/* Time */}
+                <td className="text-right">
+                  <span className="font-mono text-[11px] font-[700] text-[#637063]">{log.time}</span>
+                </td>
               </tr>
             ))}
           </tbody>

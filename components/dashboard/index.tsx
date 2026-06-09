@@ -35,13 +35,13 @@ export default function DashboardTab({
   return (
     <motion.div
       key="dashboard"
-      initial={{ opacity: 0, y: 14 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -14 }}
-      transition={{ duration: 0.22 }}
+      exit={{ opacity: 0, y: -12 }}
+      transition={{ duration: 0.2 }}
       className="space-y-6"
     >
-      {/* KPI Cards */}
+      {/* KPI cards */}
       <MetricCards
         totalRevenue={totalRevenue}
         totalProductsSold={totalProductsSold}
@@ -51,39 +51,41 @@ export default function DashboardTab({
 
       {/* Offline sync banner */}
       {syncQueueLength > 0 && (
-        <div className="bg-amber-50 border border-amber-300 p-5 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-5
+                        rounded-2xl border-2 border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50">
           <div className="flex items-center gap-3">
-            <div className="animate-spin rounded-full h-7 w-7 border-2 border-amber-200 border-t-amber-700 shrink-0" />
+            <div className="w-8 h-8 rounded-full border-2 border-amber-200 border-t-amber-600 animate-spin shrink-0" />
             <div>
-              <p className="text-sm font-bold text-amber-900">
-                Tarmoqsiz rejimda saqlangan o'zgarishlar mavjud
+              <p className="text-sm font-[700] text-amber-900">
+                Sinxronlanmagan o'zgarishlar mavjud
               </p>
-              <p className="text-xs text-amber-800">
-                Ushbu tranzaksiyalarni asosiy PostgreSQL bazasiga yozish lozim.
+              <p className="text-xs text-amber-700">
+                {syncQueueLength} ta tranzaksiya PostgreSQL bazasiga yuborilishi kerak
               </p>
             </div>
           </div>
           <button
             onClick={onRunSync}
             disabled={isSyncing}
-            className="bg-[#2D452E] hover:bg-[#3A5A40] text-white font-bold text-xs py-2.5 px-4 rounded-xl flex items-center gap-2 transition-all shadow shrink-0 disabled:opacity-60"
+            className="btn btn-sm shrink-0"
+            style={{ background: "#1e3d1f", color: "white", border: "none" }}
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${isSyncing ? "animate-spin" : ""}`} />
-            Sinxronizatsiyani ishga tushirish
+            <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? "animate-spin" : ""}`} />
+            Sinxronlash (Push)
           </button>
         </div>
       )}
 
       {/* Sync logs */}
       {syncLogs.length > 0 && (
-        <div className="bg-[#F2F4EF] p-5 rounded-2xl border border-[#DAD7CD] font-mono text-xs text-[#2D3A2D] max-h-[160px] overflow-y-auto space-y-1">
-          <p className="text-[#588157] pb-2 border-b border-[#DAD7CD] mb-2 flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px]">
-            <Activity className="h-3 w-3" /> Sinxronizatsiya loglari:
+        <div className="card p-5 font-mono text-xs max-h-[160px] overflow-y-auto space-y-1.5">
+          <p className="section-label flex items-center gap-1.5 pb-2 border-b border-[#f0ede8]">
+            <Activity className="w-3 h-3" /> Sinxronizatsiya loglari
           </p>
           {syncLogs.map((log, i) => (
-            <div key={i} className="flex items-start gap-2">
-              <span className="text-[#A3B18A] font-bold shrink-0">▶</span>
-              <span>{log}</span>
+            <div key={i} className="flex items-start gap-2 fade-in-up text-[11px]">
+              <span className="text-[#4d8751] font-[700] shrink-0">▶</span>
+              <span className="text-[#283028]">{log}</span>
             </div>
           ))}
         </div>
@@ -102,7 +104,7 @@ export default function DashboardTab({
         onRefresh={onGetAiAdvice}
       />
 
-      {/* Transaction table */}
+      {/* Transaction log */}
       <TransactionTable transactions={transactions} />
     </motion.div>
   );
