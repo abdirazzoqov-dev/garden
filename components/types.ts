@@ -2,7 +2,7 @@
 // PARK CENTRAL — Global TypeScript Type Definitions
 // ============================================================
 
-export type ActiveTab = "pos" | "dashboard" | "hr" | "orders" | "management" | "blueprint";
+export type ActiveTab = "pos" | "dashboard" | "hr" | "orders" | "kds" | "management" | "blueprint";
 export type BlueprintSubTab = "prisma" | "api" | "sync";
 export type ManagementSubTab = "stalls" | "products";
 export type PaymentMethod = "CASH" | "CARD" | "MOBILE";

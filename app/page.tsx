@@ -6,6 +6,7 @@ import Header             from "../components/Header";
 import NavigationTabs     from "../components/NavigationTabs";
 import POSTab             from "../components/pos";
 import OrdersTab          from "../components/orders";
+import KDSTab             from "../components/kds";
 import DashboardTab       from "../components/dashboard";
 import HRTab              from "../components/hr";
 import ManagementTab      from "../components/management";
@@ -27,6 +28,7 @@ export default function ParkCentralApp() {
         <NavigationTabs
           activeTab={s.activeTab}
           pendingOrdersCount={s.pendingOrdersCount}
+          kitchenCount={s.orders.filter((o) => o.status === "CONFIRMED" || o.status === "PREPARING").length}
           onTabChange={(tab) => {
             s.setActiveTab(tab);
             if (tab === "dashboard" && !s.aiReport) s.getAiDashboardAdvice();
@@ -77,6 +79,16 @@ export default function ParkCentralApp() {
               onPayOrder={s.handlePayOrder}
               onSetReservation={s.handleSetReservation}
               onCancelReservation={s.handleCancelReservation}
+            />
+          )}
+
+          {/* KDS */}
+          {s.activeTab === "kds" && (
+            <KDSTab
+              orders={s.orders}
+              stalls={s.stalls}
+              onUpdateItemStatus={s.handleUpdateOrderItemStatus}
+              onUpdateOrderStatus={s.handleUpdateOrderStatus}
             />
           )}
 
