@@ -1,15 +1,16 @@
 "use client";
 
 import { AnimatePresence } from "motion/react";
-import { useAppState } from "../components/hooks/useAppState";
-import Header         from "../components/Header";
-import NavigationTabs from "../components/NavigationTabs";
-import POSTab         from "../components/pos";
-import DashboardTab   from "../components/dashboard";
-import HRTab          from "../components/hr";
-import ManagementTab  from "../components/management";
-import BlueprintTab   from "../components/blueprint";
-import AuthModal      from "../components/AuthModal";
+import { useAppState }    from "../components/hooks/useAppState";
+import Header             from "../components/Header";
+import NavigationTabs     from "../components/NavigationTabs";
+import POSTab             from "../components/pos";
+import OrdersTab          from "../components/orders";
+import DashboardTab       from "../components/dashboard";
+import HRTab              from "../components/hr";
+import ManagementTab      from "../components/management";
+import BlueprintTab       from "../components/blueprint";
+import AuthModal          from "../components/AuthModal";
 
 export default function ParkCentralApp() {
   const s = useAppState();
@@ -25,6 +26,7 @@ export default function ParkCentralApp() {
 
         <NavigationTabs
           activeTab={s.activeTab}
+          pendingOrdersCount={s.pendingOrdersCount}
           onTabChange={(tab) => {
             s.setActiveTab(tab);
             if (tab === "dashboard" && !s.aiReport) s.getAiDashboardAdvice();
@@ -33,11 +35,12 @@ export default function ParkCentralApp() {
 
         <AnimatePresence mode="wait">
 
+          {/* POS */}
           {s.activeTab === "pos" && (
             <POSTab
-              stalls={s.stalls.filter(st => st.status === "ACTIVE")}
+              stalls={s.stalls.filter((st) => st.status === "ACTIVE")}
               employees={s.employees}
-              products={s.products.filter(p => p.isAvailable)}
+              products={s.products.filter((p) => p.isAvailable)}
               cart={s.cart}
               wsEvents={s.wsEvents}
               syncQueue={s.syncQueue}
@@ -55,6 +58,29 @@ export default function ParkCentralApp() {
             />
           )}
 
+          {/* Orders */}
+          {s.activeTab === "orders" && (
+            <OrdersTab
+              stalls={s.stalls}
+              tables={s.tables}
+              orders={s.orders}
+              products={s.products.filter((p) => p.isAvailable)}
+              employees={s.employees}
+              selectedOrderStallId={s.selectedOrderStallId}
+              onSelectOrderStall={s.setSelectedOrderStallId}
+              activeOrderId={s.activeOrderId}
+              onSetActiveOrder={s.setActiveOrderId}
+              onOpenTable={s.handleOpenTable}
+              onAddItemToOrder={s.handleAddItemToOrder}
+              onRemoveItemFromOrder={s.handleRemoveItemFromOrder}
+              onUpdateOrderStatus={s.handleUpdateOrderStatus}
+              onPayOrder={s.handlePayOrder}
+              onSetReservation={s.handleSetReservation}
+              onCancelReservation={s.handleCancelReservation}
+            />
+          )}
+
+          {/* Dashboard */}
           {s.activeTab === "dashboard" && (
             <DashboardTab
               stalls={s.stalls}
@@ -73,6 +99,7 @@ export default function ParkCentralApp() {
             />
           )}
 
+          {/* HR */}
           {s.activeTab === "hr" && (
             <HRTab
               employees={s.employees}
@@ -82,6 +109,7 @@ export default function ParkCentralApp() {
             />
           )}
 
+          {/* Management */}
           {s.activeTab === "management" && (
             <ManagementTab
               subTab={s.managementSubTab}
@@ -98,6 +126,7 @@ export default function ParkCentralApp() {
             />
           )}
 
+          {/* Blueprint */}
           {s.activeTab === "blueprint" && (
             <BlueprintTab
               subTab={s.blueprintSubTab}

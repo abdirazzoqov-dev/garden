@@ -2,7 +2,7 @@
 // PARK CENTRAL — Global TypeScript Type Definitions
 // ============================================================
 
-export type ActiveTab = "pos" | "dashboard" | "hr" | "management" | "blueprint";
+export type ActiveTab = "pos" | "dashboard" | "hr" | "orders" | "management" | "blueprint";
 export type BlueprintSubTab = "prisma" | "api" | "sync";
 export type ManagementSubTab = "stalls" | "products";
 export type PaymentMethod = "CASH" | "CARD" | "MOBILE";
@@ -13,15 +13,71 @@ export type StallStatus = "ACTIVE" | "CLOSED" | "MAINTENANCE";
 export type AttendanceType = "KIRISH" | "CHIQISH";
 export type WsEventType = "info" | "warning" | "success";
 export type ProductCategory =
-  | "FOOD"
-  | "DRINK"
-  | "DESSERT"
-  | "SNACK"
-  | "TICKET"
-  | "SOUVENIR"
-  | "TEA"
-  | "HOOKAH"
-  | "OTHER";
+  | "FOOD" | "DRINK" | "DESSERT" | "SNACK"
+  | "TICKET" | "SOUVENIR" | "TEA" | "HOOKAH" | "OTHER";
+
+// ── Table (Stol) ──────────────────────────────────────────────
+export type TableStatus = "FREE" | "OCCUPIED" | "RESERVED" | "BILL_REQUESTED";
+
+export interface Table {
+  id: string;
+  number: number;          // 1, 2, 3 ...
+  stallId: string;
+  stallName: string;
+  capacity: number;        // necha kishi sig'adi
+  status: TableStatus;
+  currentOrderId?: string; // faol buyurtma ID
+  waiterName?: string;
+  reservedFor?: string;    // rezervatsiya uchun ism
+  reservedAt?: string;
+}
+
+// ── Order (Buyurtma) ──────────────────────────────────────────
+export type OrderStatus =
+  | "NEW"           // yangi qabul qilindi
+  | "CONFIRMED"     // ofitsiant tasdiqladi
+  | "PREPARING"     // oshpazxonada tayyorlanmoqda
+  | "READY"         // tayyor, yetkazilishi kutilmoqda
+  | "SERVED"        // stol oldiga yetkazildi
+  | "BILL_REQUESTED"// hisob so'raldi
+  | "PAID"          // to'landi va yopildi
+  | "CANCELLED";    // bekor qilindi
+
+export type OrderType = "DINE_IN" | "TAKEAWAY" | "FASTFOOD";
+
+export interface OrderItem {
+  id: string;
+  productId: string;
+  productName: string;
+  category: ProductCategory;
+  price: number;
+  quantity: number;
+  note?: string;           // "o'tkir qilmang", "sous ko'p"
+  status: "PENDING" | "PREPARING" | "READY" | "SERVED";
+  prepTime?: number;
+}
+
+export interface Order {
+  id: string;
+  type: OrderType;
+  status: OrderStatus;
+  stallId: string;
+  stallName: string;
+  tableId?: string;        // DINE_IN uchun
+  tableNumber?: number;
+  waiterId?: string;
+  waiterName?: string;
+  items: OrderItem[];
+  totalAmount: number;
+  paidAmount?: number;
+  paymentMethod?: PaymentMethod;
+  guestCount?: number;
+  note?: string;
+  createdAt: string;
+  updatedAt: string;
+  servedAt?: string;
+  paidAt?: string;
+}
 
 // ── Stall ─────────────────────────────────────────────────────
 export interface Stall {
@@ -30,10 +86,10 @@ export interface Stall {
   type: StallType;
   status: StallStatus;
   description?: string;
-  openTime?: string;   // e.g. "09:00"
-  closeTime?: string;  // e.g. "22:00"
-  tableCount?: number; // for TEAHOUSE / CAFE
-  floor?: string;      // e.g. "1-qavat", "Ochiq maydon"
+  openTime?: string;
+  closeTime?: string;
+  tableCount?: number;
+  floor?: string;
   createdAt: string;
 }
 
@@ -43,11 +99,11 @@ export interface Product {
   name: string;
   category: ProductCategory;
   price: number;
-  costPrice?: number;   // purchase / production cost
+  costPrice?: number;
   stock: number;
   minStockAlert: number;
-  unit?: string;        // "dona", "kg", "litr", "porsiya"
-  prepTime?: number;    // minutes – for FASTFOOD / TEAHOUSE
+  unit?: string;
+  prepTime?: number;
   isAvailable: boolean;
   stallId: string;
   stallName: string;
@@ -123,7 +179,7 @@ export interface PayrollResult {
 // ── Auth ──────────────────────────────────────────────────────
 export type PendingActionType = "switch_seller" | "check_toggle";
 
-// ── Management modal ──────────────────────────────────────────
+// ── Management forms ──────────────────────────────────────────
 export type ModalMode = "create" | "edit";
 
 export interface StallFormData {

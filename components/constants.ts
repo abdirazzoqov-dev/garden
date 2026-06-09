@@ -160,6 +160,90 @@ export const INITIAL_WS_EVENTS: WsEvent[] = [
   { id: "ws_4", time: "08:50:00", text: "Xodim Jamshid Tojiyev attraksion rastasida ish boshladi",                  type: "info"    },
 ];
 
+// ── Initial Tables ────────────────────────────────────────────
+export const INITIAL_TABLES: import("./types").Table[] = [
+  // Bog' Choyxonasi — 8 ta stol (stall_2, tableCount: 20)
+  { id: "tbl_2_01", number: 1,  stallId: "stall_2", stallName: "Bog' Choyxonasi", capacity: 4, status: "OCCUPIED",  currentOrderId: "ord_001", waiterName: "Zulfiya Yusupova" },
+  { id: "tbl_2_02", number: 2,  stallId: "stall_2", stallName: "Bog' Choyxonasi", capacity: 4, status: "FREE" },
+  { id: "tbl_2_03", number: 3,  stallId: "stall_2", stallName: "Bog' Choyxonasi", capacity: 6, status: "OCCUPIED",  currentOrderId: "ord_002", waiterName: "Zulfiya Yusupova" },
+  { id: "tbl_2_04", number: 4,  stallId: "stall_2", stallName: "Bog' Choyxonasi", capacity: 4, status: "RESERVED",  reservedFor: "Karimov oilasi", reservedAt: "13:00" },
+  { id: "tbl_2_05", number: 5,  stallId: "stall_2", stallName: "Bog' Choyxonasi", capacity: 2, status: "FREE" },
+  { id: "tbl_2_06", number: 6,  stallId: "stall_2", stallName: "Bog' Choyxonasi", capacity: 8, status: "FREE" },
+  { id: "tbl_2_07", number: 7,  stallId: "stall_2", stallName: "Bog' Choyxonasi", capacity: 4, status: "BILL_REQUESTED", currentOrderId: "ord_003", waiterName: "Zulfiya Yusupova" },
+  { id: "tbl_2_08", number: 8,  stallId: "stall_2", stallName: "Bog' Choyxonasi", capacity: 4, status: "FREE" },
+  // VIP Kafe — 5 ta stol (stall_6, tableCount: 10)
+  { id: "tbl_6_01", number: 1,  stallId: "stall_6", stallName: "VIP Kafe", capacity: 2, status: "OCCUPIED",  currentOrderId: "ord_004" },
+  { id: "tbl_6_02", number: 2,  stallId: "stall_6", stallName: "VIP Kafe", capacity: 4, status: "FREE" },
+  { id: "tbl_6_03", number: 3,  stallId: "stall_6", stallName: "VIP Kafe", capacity: 4, status: "FREE" },
+  { id: "tbl_6_04", number: 4,  stallId: "stall_6", stallName: "VIP Kafe", capacity: 6, status: "RESERVED", reservedFor: "Abdullayev", reservedAt: "14:30" },
+  { id: "tbl_6_05", number: 5,  stallId: "stall_6", stallName: "VIP Kafe", capacity: 2, status: "FREE" },
+];
+
+// ── Initial Orders ────────────────────────────────────────────
+export const INITIAL_ORDERS: import("./types").Order[] = [
+  {
+    id: "ord_001", type: "DINE_IN", status: "PREPARING",
+    stallId: "stall_2", stallName: "Bog' Choyxonasi",
+    tableId: "tbl_2_01", tableNumber: 1,
+    waiterId: "emp_5", waiterName: "Zulfiya Yusupova",
+    guestCount: 3,
+    items: [
+      { id: "oi_1", productId: "prod_5", productName: "Ko'k Choy (Chinni)", category: "TEA",  price: 8000,  quantity: 3, status: "READY",    prepTime: 5 },
+      { id: "oi_2", productId: "prod_7", productName: "Samsa (2 dona)",      category: "FOOD", price: 16000, quantity: 2, status: "PREPARING", prepTime: 0 },
+    ],
+    totalAmount: 56000,
+    createdAt: "11:05:00", updatedAt: "11:08:00",
+  },
+  {
+    id: "ord_002", type: "DINE_IN", status: "SERVED",
+    stallId: "stall_2", stallName: "Bog' Choyxonasi",
+    tableId: "tbl_2_03", tableNumber: 3,
+    waiterId: "emp_5", waiterName: "Zulfiya Yusupova",
+    guestCount: 5,
+    items: [
+      { id: "oi_3", productId: "prod_6", productName: "Qora Choy + Shirinlik", category: "TEA",    price: 12000, quantity: 3, status: "SERVED", prepTime: 5 },
+      { id: "oi_4", productId: "prod_8", productName: "Xalyopa (1 soat)",       category: "HOOKAH", price: 80000, quantity: 1, status: "SERVED", prepTime: 10 },
+    ],
+    totalAmount: 116000,
+    createdAt: "10:30:00", updatedAt: "10:55:00", servedAt: "10:55:00",
+  },
+  {
+    id: "ord_003", type: "DINE_IN", status: "BILL_REQUESTED",
+    stallId: "stall_2", stallName: "Bog' Choyxonasi",
+    tableId: "tbl_2_07", tableNumber: 7,
+    waiterId: "emp_5", waiterName: "Zulfiya Yusupova",
+    guestCount: 2,
+    items: [
+      { id: "oi_5", productId: "prod_5", productName: "Ko'k Choy (Chinni)", category: "TEA",  price: 8000, quantity: 2, status: "SERVED", prepTime: 5 },
+    ],
+    totalAmount: 16000,
+    createdAt: "11:30:00", updatedAt: "11:45:00", servedAt: "11:40:00",
+  },
+  {
+    id: "ord_004", type: "DINE_IN", status: "NEW",
+    stallId: "stall_6", stallName: "VIP Kafe",
+    tableId: "tbl_6_01", tableNumber: 1,
+    guestCount: 2,
+    items: [
+      { id: "oi_6", productId: "prod_14", productName: "Kapuchino", category: "DRINK",   price: 28000, quantity: 2, status: "PENDING", prepTime: 4 },
+      { id: "oi_7", productId: "prod_15", productName: "Tiramisu",  category: "DESSERT", price: 45000, quantity: 1, status: "PENDING", prepTime: 0 },
+    ],
+    totalAmount: 101000,
+    createdAt: "11:50:00", updatedAt: "11:50:00",
+  },
+  {
+    id: "ord_005", type: "TAKEAWAY", status: "PREPARING",
+    stallId: "stall_1", stallName: "Markaziy Fast-Food",
+    waiterId: "emp_2", waiterName: "Shahzod Alimov",
+    items: [
+      { id: "oi_8", productId: "prod_1", productName: "Sirlangan Burger Klasik", category: "FOOD",  price: 32000, quantity: 2, status: "PREPARING", prepTime: 7 },
+      { id: "oi_9", productId: "prod_3", productName: "Coca-Cola 0.5L",          category: "DRINK", price: 10000, quantity: 2, status: "READY",     prepTime: 0 },
+    ],
+    totalAmount: 84000,
+    createdAt: "11:55:00", updatedAt: "11:57:00",
+  },
+];
+
 // ── Blueprint snippets (unchanged) ───────────────────────────
 export const PRISMA_SCHEMA_CODE = `// prisma/schema.prisma
 datasource db {

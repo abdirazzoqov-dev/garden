@@ -1,11 +1,12 @@
 "use client";
 
-import { ShoppingCart, BarChart3, Users, Settings, Code2 } from "lucide-react";
+import { ShoppingCart, BarChart3, Users, ClipboardList, Settings, Code2 } from "lucide-react";
 import type { ActiveTab } from "./types";
 
 interface NavigationTabsProps {
   activeTab: ActiveTab;
   onTabChange: (tab: ActiveTab) => void;
+  pendingOrdersCount?: number;
 }
 
 const TABS: {
@@ -15,25 +16,27 @@ const TABS: {
   icon: React.ReactNode;
   accent?: boolean;
 }[] = [
-  { id: "pos",        label: "POS Kassa",    short: "POS",       icon: <ShoppingCart className="w-4 h-4" /> },
-  { id: "dashboard",  label: "Analitika",    short: "Analitika", icon: <BarChart3    className="w-4 h-4" /> },
-  { id: "hr",         label: "HR & Payroll", short: "HR",        icon: <Users        className="w-4 h-4" /> },
-  { id: "management", label: "Boshqaruv",    short: "Boshqaruv", icon: <Settings     className="w-4 h-4" /> },
-  { id: "blueprint",  label: "Blueprint",    short: "Dev",       icon: <Code2        className="w-4 h-4" />, accent: true },
+  { id: "pos",        label: "POS Kassa",    short: "POS",       icon: <ShoppingCart  className="w-4 h-4" /> },
+  { id: "orders",     label: "Buyurtmalar",  short: "Buyurtma",  icon: <ClipboardList className="w-4 h-4" /> },
+  { id: "dashboard",  label: "Analitika",    short: "Analitika", icon: <BarChart3     className="w-4 h-4" /> },
+  { id: "hr",         label: "HR & Payroll", short: "HR",        icon: <Users         className="w-4 h-4" /> },
+  { id: "management", label: "Boshqaruv",    short: "Boshqaruv", icon: <Settings      className="w-4 h-4" /> },
+  { id: "blueprint",  label: "Blueprint",    short: "Dev",       icon: <Code2         className="w-4 h-4" />, accent: true },
 ];
 
-export default function NavigationTabs({ activeTab, onTabChange }: NavigationTabsProps) {
+export default function NavigationTabs({ activeTab, onTabChange, pendingOrdersCount }: NavigationTabsProps) {
   return (
     <div className="mb-8">
       <div className="flex flex-wrap items-center gap-1 p-1 bg-[#f0ede8] rounded-2xl border border-[#dedad3] w-fit">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
+          const hasBadge = tab.id === "orders" && pendingOrdersCount && pendingOrdersCount > 0;
           return (
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               className={`
-                flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-[700]
+                relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-[700]
                 transition-all duration-150 whitespace-nowrap
                 ${isActive
                   ? tab.accent
@@ -46,6 +49,14 @@ export default function NavigationTabs({ activeTab, onTabChange }: NavigationTab
               {tab.icon}
               <span className="hidden sm:inline">{tab.label}</span>
               <span className="sm:hidden">{tab.short}</span>
+              {hasBadge && (
+                <span className={`
+                  w-5 h-5 rounded-full text-[10px] font-[800] flex items-center justify-center shrink-0
+                  ${isActive ? "bg-[#1e3d1f] text-white" : "bg-red-500 text-white"}
+                `}>
+                  {pendingOrdersCount! > 9 ? "9+" : pendingOrdersCount}
+                </span>
+              )}
             </button>
           );
         })}
