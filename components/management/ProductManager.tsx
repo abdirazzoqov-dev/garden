@@ -145,6 +145,7 @@ export default function ProductManager({
                   <th className="text-right">Narx</th>
                   <th className="text-right">Tannarx</th>
                   <th className="text-right hidden md:table-cell">Marjin</th>
+                  <th className="text-center hidden lg:table-cell">Barcode</th>
                   <th className="text-center">Zaxira</th>
                   <th className="text-center">Holat</th>
                   <th className="text-center">Amallar</th>
@@ -204,6 +205,17 @@ export default function ProductManager({
                               {margin}%
                             </span>
                           ) : <span className="text-[#c4ccc4]">—</span>}
+                        </td>
+                        {/* Barcode */}
+                        <td className="text-center hidden lg:table-cell">
+                          {p.barcode ? (
+                            <span className="font-mono text-[10px] text-[#4d8751] bg-[#eef7ef]
+                                             px-2 py-0.5 rounded-full border border-[#b8d9ba]">
+                              {p.barcode}
+                            </span>
+                          ) : (
+                            <span className="text-[#c4ccc4] text-[10px]">—</span>
+                          )}
                         </td>
                         {/* Stock */}
                         <td className="text-center">
