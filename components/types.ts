@@ -2,7 +2,7 @@
 // PARK CENTRAL — Global TypeScript Type Definitions
 // ============================================================
 
-export type ActiveTab = "pos" | "dashboard" | "hr" | "orders" | "kds" | "discounts" | "reports" | "customers" | "management" | "blueprint";
+export type ActiveTab = "pos" | "dashboard" | "hr" | "orders" | "kds" | "discounts" | "reports" | "customers" | "stalls" | "management" | "blueprint";
 export type BlueprintSubTab = "prisma" | "api" | "sync";
 export type ManagementSubTab = "stalls" | "products";
 export type PaymentMethod = "CASH" | "CARD" | "MOBILE";
@@ -263,6 +263,28 @@ export interface DiscountFormData {
   startDate: string;
   endDate: string;
   description: string;
+}
+
+// ── Stall Panel ───────────────────────────────────────────────
+export type StallPanelTab =
+  | "overview"   // umumiy ko'rinish
+  | "pos"        // kassa
+  | "orders"     // buyurtmalar (choyxona / kafe)
+  | "tables"     // stol rejasi
+  | "kitchen"    // oshpazxona (KDS)
+  | "stock"      // zaxira
+  | "tickets"    // chipta (attraksion)
+  | "analytics"; // statistika
+
+export interface StallMetrics {
+  stallId:        string;
+  revenue:        number;   // bugungi tushum
+  orderCount:     number;   // buyurtmalar soni
+  activeOrders:   number;   // faol buyurtmalar
+  lowStockCount:  number;   // kam zaxira
+  tablesOccupied: number;   // band stollar
+  tablesTotal:    number;   // jami stollar
+  staffOnDuty:    number;   // ishda bo'lgan xodimlar
 }
 
 // ── Management forms ──────────────────────────────────────────
