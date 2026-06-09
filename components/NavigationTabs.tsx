@@ -1,6 +1,6 @@
 "use client";
 
-import { ShoppingCart, BarChart3, Users, ClipboardList, ChefHat, Tag, Settings, Code2 } from "lucide-react";
+import { ShoppingCart, BarChart3, Users, ClipboardList, ChefHat, Tag, FileText, Settings, Code2 } from "lucide-react";
 import type { ActiveTab } from "./types";
 
 interface NavigationTabsProps {
@@ -10,21 +10,16 @@ interface NavigationTabsProps {
   kitchenCount?: number;
 }
 
-const TABS: {
-  id: ActiveTab;
-  label: string;
-  short: string;
-  icon: React.ReactNode;
-  accent?: boolean;
-}[] = [
-  { id: "pos",        label: "POS Kassa",    short: "POS",       icon: <ShoppingCart  className="w-4 h-4" /> },
-  { id: "orders",     label: "Buyurtmalar",  short: "Buyurtma",  icon: <ClipboardList className="w-4 h-4" /> },
-  { id: "kds",        label: "Oshpazxona",   short: "KDS",       icon: <ChefHat       className="w-4 h-4" /> },
-  { id: "dashboard",  label: "Analitika",    short: "Analitika", icon: <BarChart3     className="w-4 h-4" /> },
-  { id: "hr",         label: "HR & Payroll", short: "HR",        icon: <Users         className="w-4 h-4" /> },
-  { id: "discounts",  label: "Chegirmalar",  short: "Chegirma",  icon: <Tag           className="w-4 h-4" /> },
-  { id: "management", label: "Boshqaruv",    short: "Boshqaruv", icon: <Settings      className="w-4 h-4" /> },
-  { id: "blueprint",  label: "Blueprint",    short: "Dev",       icon: <Code2         className="w-4 h-4" />, accent: true },
+const TABS: { id: ActiveTab; label: string; short: string; icon: React.ReactNode; accent?: boolean }[] = [
+  { id: "pos",        label: "POS Kassa",   short: "POS",     icon: <ShoppingCart  className="w-4 h-4" /> },
+  { id: "orders",     label: "Buyurtmalar", short: "Buyurtma",icon: <ClipboardList className="w-4 h-4" /> },
+  { id: "kds",        label: "Oshpazxona",  short: "KDS",     icon: <ChefHat       className="w-4 h-4" /> },
+  { id: "dashboard",  label: "Dashboard",   short: "Dash",    icon: <BarChart3     className="w-4 h-4" /> },
+  { id: "reports",    label: "Hisobot",     short: "Hisobot", icon: <FileText      className="w-4 h-4" /> },
+  { id: "hr",         label: "HR",          short: "HR",      icon: <Users         className="w-4 h-4" /> },
+  { id: "discounts",  label: "Chegirmalar", short: "Chegirma",icon: <Tag           className="w-4 h-4" /> },
+  { id: "management", label: "Boshqaruv",   short: "Boshq.",  icon: <Settings      className="w-4 h-4" /> },
+  { id: "blueprint",  label: "Blueprint",   short: "Dev",     icon: <Code2         className="w-4 h-4" />, accent: true },
 ];
 
 export default function NavigationTabs({ activeTab, onTabChange, pendingOrdersCount, kitchenCount }: NavigationTabsProps) {
