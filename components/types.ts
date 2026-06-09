@@ -2,7 +2,7 @@
 // PARK CENTRAL — Global TypeScript Type Definitions
 // ============================================================
 
-export type ActiveTab = "pos" | "dashboard" | "hr" | "orders" | "kds" | "management" | "blueprint";
+export type ActiveTab = "pos" | "dashboard" | "hr" | "orders" | "kds" | "discounts" | "management" | "blueprint";
 export type BlueprintSubTab = "prisma" | "api" | "sync";
 export type ManagementSubTab = "stalls" | "products";
 export type PaymentMethod = "CASH" | "CARD" | "MOBILE";
@@ -178,6 +178,55 @@ export interface PayrollResult {
 
 // ── Auth ──────────────────────────────────────────────────────
 export type PendingActionType = "switch_seller" | "check_toggle";
+
+// ── Discount / Promo ──────────────────────────────────────────
+export type DiscountType   = "PERCENTAGE" | "FIXED_AMOUNT" | "BUY_X_GET_Y" | "FREE_ITEM";
+export type DiscountTarget = "ALL" | "STALL" | "CATEGORY" | "PRODUCT";
+export type DiscountStatus = "ACTIVE" | "INACTIVE" | "EXPIRED" | "SCHEDULED";
+
+export interface Discount {
+  id: string;
+  name: string;
+  code?: string;              // promo-kod (ixtiyoriy)
+  type: DiscountType;
+  status: DiscountStatus;
+  value: number;              // % yoki so'm miqdori
+  minOrderAmount?: number;    // minimal buyurtma summasi
+  maxUsageCount?: number;     // maksimal foydalanish
+  usageCount: number;         // necha marta ishlatilgan
+  buyQty?: number;            // BUY_X_GET_Y uchun: sotib olish soni
+  getQty?: number;            // BUY_X_GET_Y uchun: bepul olish soni
+  freeProductId?: string;     // FREE_ITEM uchun
+  target: DiscountTarget;
+  stallId?: string;           // faqat shu rasta uchun
+  stallName?: string;
+  categoryTarget?: string;    // faqat shu kategoriya uchun
+  productId?: string;         // faqat shu mahsulot uchun
+  productName?: string;
+  startDate?: string;
+  endDate?: string;
+  description?: string;
+  createdAt: string;
+}
+
+export interface DiscountFormData {
+  name: string;
+  code: string;
+  type: DiscountType;
+  status: DiscountStatus;
+  value: number;
+  minOrderAmount: number;
+  maxUsageCount: number;
+  buyQty: number;
+  getQty: number;
+  target: DiscountTarget;
+  stallId: string;
+  categoryTarget: string;
+  productId: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+}
 
 // ── Management forms ──────────────────────────────────────────
 export type ModalMode = "create" | "edit";

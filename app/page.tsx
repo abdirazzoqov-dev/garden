@@ -9,6 +9,7 @@ import OrdersTab          from "../components/orders";
 import KDSTab             from "../components/kds";
 import DashboardTab       from "../components/dashboard";
 import HRTab              from "../components/hr";
+import DiscountsTab       from "../components/discounts";
 import ManagementTab      from "../components/management";
 import BlueprintTab       from "../components/blueprint";
 import AuthModal          from "../components/AuthModal";
@@ -118,6 +119,18 @@ export default function ParkCentralApp() {
               attendanceLogs={s.attendanceLogs}
               calculatePayroll={s.calculatePayroll}
               onOpenAuth={s.openAuthModal}
+            />
+          )}
+
+          {/* Discounts */}
+          {s.activeTab === "discounts" && (
+            <DiscountsTab
+              discounts={s.discounts}
+              stalls={s.stalls}
+              onAdd={s.handleAddDiscount}
+              onUpdate={s.handleUpdateDiscount}
+              onDelete={s.handleDeleteDiscount}
+              onToggle={s.handleToggleDiscount}
             />
           )}
 

@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import {
   INITIAL_STALLS, INITIAL_EMPLOYEES, INITIAL_PRODUCTS,
   INITIAL_TRANSACTIONS, INITIAL_ATTENDANCE, INITIAL_WS_EVENTS,
-  INITIAL_TABLES, INITIAL_ORDERS,
+  INITIAL_TABLES, INITIAL_ORDERS, INITIAL_DISCOUNTS,
 } from "../constants";
 import { formatNumber, getUniqueId, getSystemTime, getSystemTimeShort } from "../utils";
 import type {
@@ -16,6 +16,7 @@ import type {
   CartItem, PaymentMethod, PayrollResult, PendingActionType,
   ActiveTab, BlueprintSubTab, ManagementSubTab,
   Table, TableStatus, Order, OrderItem, OrderStatus, OrderType,
+  Discount,
 } from "../types";
 
 export function useAppState() {
@@ -37,6 +38,10 @@ export function useAppState() {
   // ── Tables & Orders ───────────────────────────────────────────
   const [tables, setTables] = useState<Table[]>(INITIAL_TABLES);
   const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
+
+  // ── Discounts ─────────────────────────────────────────────────
+  const [discounts,      setDiscounts]      = useState<Discount[]>(INITIAL_DISCOUNTS);
+  const [appliedDiscountId, setAppliedDiscountId] = useState<string | null>(null);
 
   // ── Orders UI state ───────────────────────────────────────────
   const [selectedOrderStallId, setSelectedOrderStallId] = useState<string>("stall_2");
@@ -364,6 +369,34 @@ export function useAppState() {
     setTableStatus(tableId, "FREE", { reservedFor: undefined, reservedAt: undefined });
   };
 
+  // ── Discount helpers ──────────────────────────────────────────
+  const calcDiscountAmount = (amount: number): number => {
+    if (!appliedDiscountId) return 0;
+    const d = discounts.find((d) => d.id === appliedDiscountId);
+    if (!d || d.status !== "ACTIVE") return 0;
+    if (d.minOrderAmount && amount < d.minOrderAmount) return 0;
+    if (d.type === "PERCENTAGE")   return Math.round(amount * d.value / 100);
+    if (d.type === "FIXED_AMOUNT") return Math.min(d.value, amount);
+    return 0;
+  };
+
+  // ══════════════════════════════════════════════════════════════
+  // DISCOUNT CRUD
+  // ══════════════════════════════════════════════════════════════
+
+  const handleAddDiscount = (d: Discount) => setDiscounts((prev) => [d, ...prev]);
+  const handleUpdateDiscount = (d: Discount) =>
+    setDiscounts((prev) => prev.map((x) => x.id === d.id ? d : x));
+  const handleDeleteDiscount = (id: string) =>
+    setDiscounts((prev) => prev.filter((d) => d.id !== id));
+  const handleToggleDiscount = (id: string) =>
+    setDiscounts((prev) =>
+      prev.map((d) => d.id === id
+        ? { ...d, status: d.status === "ACTIVE" ? "INACTIVE" : "ACTIVE" }
+        : d
+      )
+    );
+
   // ══════════════════════════════════════════════════════════════
   // POS ACTIONS
   // ══════════════════════════════════════════════════════════════
@@ -397,7 +430,9 @@ export function useAppState() {
     const employee = employees.find((e) => e.id === activeSellerId) ?? employees[0];
     const stall    = stalls.find((s) => s.id === selectedStallIdRaw) ?? stalls[0];
     const time     = getSystemTime();
-    const amount   = cart.reduce((s, i) => s + i.product.price * i.quantity, 0);
+    const rawAmount  = cart.reduce((s, i) => s + i.product.price * i.quantity, 0);
+    const discAmount = calcDiscountAmount(rawAmount);
+    const amount     = rawAmount - discAmount;
 
     const newTxn: Transaction = {
       id: `txn_${Date.now().toString().slice(-6)}_${Math.random().toString(36).substring(2, 5)}`,
@@ -413,6 +448,14 @@ export function useAppState() {
       prev.map((p) => { const ci = cart.find((c) => c.product.id === p.id); return ci ? { ...p, stock: p.stock - ci.quantity } : p; })
     );
     setTransactions((prev) => [newTxn, ...prev]);
+
+    // Increment discount usage
+    if (appliedDiscountId) {
+      setDiscounts((prev) =>
+        prev.map((d) => d.id === appliedDiscountId ? { ...d, usageCount: d.usageCount + 1 } : d)
+      );
+      setAppliedDiscountId(null);
+    }
 
     if (isOnline) {
       setWsEvents((prev) => [{ id: getUniqueId("ws"), time, text: `✅ Sotuv: ${employee.name} (${stall.name}) — ${formatNumber(amount)} so'm`, type: "success" }, ...prev]);
@@ -624,6 +667,10 @@ export function useAppState() {
     handleAddStall, handleUpdateStall, handleDeleteStall,
     handleAddProduct, handleUpdateProduct, handleDeleteProduct,
     handleToggleProductAvailable,
+    // discounts
+    discounts, appliedDiscountId, setAppliedDiscountId,
+    calcDiscountAmount,
+    handleAddDiscount, handleUpdateDiscount, handleDeleteDiscount, handleToggleDiscount,
   };
 }
 

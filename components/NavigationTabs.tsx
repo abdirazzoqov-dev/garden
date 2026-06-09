@@ -1,6 +1,6 @@
 "use client";
 
-import { ShoppingCart, BarChart3, Users, ClipboardList, ChefHat, Settings, Code2 } from "lucide-react";
+import { ShoppingCart, BarChart3, Users, ClipboardList, ChefHat, Tag, Settings, Code2 } from "lucide-react";
 import type { ActiveTab } from "./types";
 
 interface NavigationTabsProps {
@@ -22,6 +22,7 @@ const TABS: {
   { id: "kds",        label: "Oshpazxona",   short: "KDS",       icon: <ChefHat       className="w-4 h-4" /> },
   { id: "dashboard",  label: "Analitika",    short: "Analitika", icon: <BarChart3     className="w-4 h-4" /> },
   { id: "hr",         label: "HR & Payroll", short: "HR",        icon: <Users         className="w-4 h-4" /> },
+  { id: "discounts",  label: "Chegirmalar",  short: "Chegirma",  icon: <Tag           className="w-4 h-4" /> },
   { id: "management", label: "Boshqaruv",    short: "Boshqaruv", icon: <Settings      className="w-4 h-4" /> },
   { id: "blueprint",  label: "Blueprint",    short: "Dev",       icon: <Code2         className="w-4 h-4" />, accent: true },
 ];
