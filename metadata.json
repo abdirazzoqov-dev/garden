@@ -1,0 +1,6 @@
+{
+  "name": "Park Central Platform",
+  "description": "Park hududidagi savdo rastalari, attraksionlar, xodimlar va moliyani boshqarish raqamli ekotizimi",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
