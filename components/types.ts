@@ -2,7 +2,7 @@
 // PARK CENTRAL — Global TypeScript Type Definitions
 // ============================================================
 
-export type ActiveTab = "pos" | "dashboard" | "hr" | "orders" | "kds" | "discounts" | "reports" | "management" | "blueprint";
+export type ActiveTab = "pos" | "dashboard" | "hr" | "orders" | "kds" | "discounts" | "reports" | "customers" | "management" | "blueprint";
 export type BlueprintSubTab = "prisma" | "api" | "sync";
 export type ManagementSubTab = "stalls" | "products";
 export type PaymentMethod = "CASH" | "CARD" | "MOBILE";
@@ -178,6 +178,43 @@ export interface PayrollResult {
 
 // ── Auth ──────────────────────────────────────────────────────
 export type PendingActionType = "switch_seller" | "check_toggle";
+
+// ── Customer / Loyalty ───────────────────────────────────────
+export type LoyaltyTier = "BRONZE" | "SILVER" | "GOLD" | "PLATINUM";
+
+export interface Customer {
+  id: string;
+  name: string;
+  phone: string;
+  email?: string;
+  tier: LoyaltyTier;
+  points: number;              // accumulated loyalty points
+  totalSpent: number;          // lifetime spend in UZS
+  visitCount: number;
+  lastVisit?: string;
+  birthday?: string;
+  notes?: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface CustomerFormData {
+  name: string;
+  phone: string;
+  email: string;
+  birthday: string;
+  notes: string;
+}
+
+export interface LoyaltyTransaction {
+  id: string;
+  customerId: string;
+  customerName: string;
+  type: "EARN" | "REDEEM" | "BONUS" | "EXPIRE";
+  points: number;
+  description: string;
+  createdAt: string;
+}
 
 // ── Discount / Promo ──────────────────────────────────────────
 export type DiscountType   = "PERCENTAGE" | "FIXED_AMOUNT" | "BUY_X_GET_Y" | "FREE_ITEM";

@@ -9,6 +9,7 @@ import {
   INITIAL_STALLS, INITIAL_EMPLOYEES, INITIAL_PRODUCTS,
   INITIAL_TRANSACTIONS, INITIAL_ATTENDANCE, INITIAL_WS_EVENTS,
   INITIAL_TABLES, INITIAL_ORDERS, INITIAL_DISCOUNTS,
+  INITIAL_CUSTOMERS, INITIAL_LOYALTY_TXN,
 } from "../constants";
 import { formatNumber, getUniqueId, getSystemTime, getSystemTimeShort } from "../utils";
 import type {
@@ -16,7 +17,7 @@ import type {
   CartItem, PaymentMethod, PayrollResult, PendingActionType,
   ActiveTab, BlueprintSubTab, ManagementSubTab,
   Table, TableStatus, Order, OrderItem, OrderStatus, OrderType,
-  Discount,
+  Discount, Customer, LoyaltyTransaction, LoyaltyTier,
 } from "../types";
 
 export function useAppState() {
@@ -40,8 +41,12 @@ export function useAppState() {
   const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
 
   // ── Discounts ─────────────────────────────────────────────────
-  const [discounts,      setDiscounts]      = useState<Discount[]>(INITIAL_DISCOUNTS);
+  const [discounts,         setDiscounts]         = useState<Discount[]>(INITIAL_DISCOUNTS);
   const [appliedDiscountId, setAppliedDiscountId] = useState<string | null>(null);
+
+  // ── Customers & Loyalty ───────────────────────────────────────
+  const [customers,      setCustomers]      = useState<Customer[]>(INITIAL_CUSTOMERS);
+  const [loyaltyHistory, setLoyaltyHistory] = useState<LoyaltyTransaction[]>(INITIAL_LOYALTY_TXN);
 
   // ── Orders UI state ───────────────────────────────────────────
   const [selectedOrderStallId, setSelectedOrderStallId] = useState<string>("stall_2");
@@ -398,6 +403,50 @@ export function useAppState() {
     );
 
   // ══════════════════════════════════════════════════════════════
+  // CUSTOMER & LOYALTY ACTIONS
+  // ══════════════════════════════════════════════════════════════
+
+  const getTierFromSpent = (totalSpent: number): LoyaltyTier => {
+    if (totalSpent >= 5000000) return "PLATINUM";
+    if (totalSpent >= 2000000) return "GOLD";
+    if (totalSpent >= 500000)  return "SILVER";
+    return "BRONZE";
+  };
+
+  const handleAddCustomer    = (c: Customer) => setCustomers((prev) => [c, ...prev]);
+  const handleUpdateCustomer = (c: Customer) =>
+    setCustomers((prev) => prev.map((x) => x.id === c.id ? c : x));
+  const handleDeleteCustomer = (id: string) => {
+    setCustomers((prev) => prev.filter((c) => c.id !== id));
+    setLoyaltyHistory((prev) => prev.filter((h) => h.customerId !== id));
+  };
+  const handleToggleCustomerActive = (id: string) =>
+    setCustomers((prev) => prev.map((c) => c.id === id ? { ...c, isActive: !c.isActive } : c));
+
+  const handleAddLoyaltyPoints = (customerId: string, points: number, description: string) => {
+    const today = new Date().toISOString().split("T")[0];
+    const cust  = customers.find((c) => c.id === customerId);
+    if (!cust) return;
+    setCustomers((prev) => prev.map((c) => c.id === customerId ? { ...c, points: c.points + points } : c));
+    setLoyaltyHistory((prev) => [{
+      id: getUniqueId("lpt"), customerId, customerName: cust.name,
+      type: "BONUS", points, description, createdAt: today,
+    }, ...prev]);
+  };
+
+  const handleRedeemLoyaltyPoints = (customerId: string, pointsToRedeem: number) => {
+    const today = new Date().toISOString().split("T")[0];
+    const cust  = customers.find((c) => c.id === customerId);
+    if (!cust || cust.points < pointsToRedeem) return;
+    setCustomers((prev) => prev.map((c) => c.id === customerId ? { ...c, points: c.points - pointsToRedeem } : c));
+    setLoyaltyHistory((prev) => [{
+      id: getUniqueId("lpt"), customerId, customerName: cust.name,
+      type: "REDEEM", points: -pointsToRedeem,
+      description: `${pointsToRedeem} ball almashildi — chegirma olindi`, createdAt: today,
+    }, ...prev]);
+  };
+
+  // ══════════════════════════════════════════════════════════════
   // POS ACTIONS
   // ══════════════════════════════════════════════════════════════
 
@@ -671,6 +720,11 @@ export function useAppState() {
     discounts, appliedDiscountId, setAppliedDiscountId,
     calcDiscountAmount,
     handleAddDiscount, handleUpdateDiscount, handleDeleteDiscount, handleToggleDiscount,
+    // customers & loyalty
+    customers, loyaltyHistory,
+    handleAddCustomer, handleUpdateCustomer, handleDeleteCustomer,
+    handleToggleCustomerActive,
+    handleAddLoyaltyPoints, handleRedeemLoyaltyPoints,
   };
 }
 

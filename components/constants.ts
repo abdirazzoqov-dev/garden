@@ -244,6 +244,63 @@ export const INITIAL_ORDERS: import("./types").Order[] = [
   },
 ];
 
+// ── Loyalty tier config ───────────────────────────────────────
+export const LOYALTY_TIERS = {
+  BRONZE:   { label: "Bronza",   minSpent: 0,         pointRate: 1,  color: "text-amber-700",    bg: "bg-amber-100  border-amber-200",   emoji: "🥉" },
+  SILVER:   { label: "Kumush",   minSpent: 500000,    pointRate: 2,  color: "text-slate-600",    bg: "bg-slate-100  border-slate-200",   emoji: "🥈" },
+  GOLD:     { label: "Oltin",    minSpent: 2000000,   pointRate: 3,  color: "text-yellow-700",   bg: "bg-yellow-100 border-yellow-200",  emoji: "🥇" },
+  PLATINUM: { label: "Platinum", minSpent: 5000000,   pointRate: 5,  color: "text-purple-700",   bg: "bg-purple-100 border-purple-200",  emoji: "💎" },
+} as const;
+
+// Points per 1000 UZS spent
+export const POINTS_PER_1000 = 1; // base, multiplied by tier pointRate
+
+// ── Initial Customers ─────────────────────────────────────────
+export const INITIAL_CUSTOMERS: import("./types").Customer[] = [
+  {
+    id: "cust_1", name: "Akbar Toshmatov",   phone: "+998 90 123 4567", email: "akbar@mail.uz",
+    tier: "GOLD",     points: 3450, totalSpent: 2850000, visitCount: 18, lastVisit: "2026-06-08",
+    birthday: "1990-03-15", isActive: true, createdAt: "2026-01-15",
+    notes: "Xalyopa va choy ixlosmandi",
+  },
+  {
+    id: "cust_2", name: "Malika Yusupova",   phone: "+998 91 234 5678",
+    tier: "SILVER",   points: 1200, totalSpent: 980000,  visitCount: 9,  lastVisit: "2026-06-07",
+    birthday: "1995-07-20", isActive: true, createdAt: "2026-02-10",
+  },
+  {
+    id: "cust_3", name: "Jasur Rahimov",     phone: "+998 93 345 6789",
+    tier: "PLATINUM", points: 8900, totalSpent: 6200000, visitCount: 42, lastVisit: "2026-06-09",
+    birthday: "1985-11-03", isActive: true, createdAt: "2025-11-01",
+    notes: "VIP mijoz, har hafta keladi",
+  },
+  {
+    id: "cust_4", name: "Nodira Karimova",   phone: "+998 97 456 7890",
+    tier: "BRONZE",   points: 380,  totalSpent: 320000,  visitCount: 4,  lastVisit: "2026-05-20",
+    isActive: true, createdAt: "2026-04-05",
+  },
+  {
+    id: "cust_5", name: "Sanjar Mirzayev",   phone: "+998 99 567 8901",
+    tier: "GOLD",     points: 2100, totalSpent: 1750000, visitCount: 14, lastVisit: "2026-06-06",
+    birthday: "1992-09-12", isActive: true, createdAt: "2026-01-28",
+  },
+  {
+    id: "cust_6", name: "Feruza Holmatova",  phone: "+998 94 678 9012",
+    tier: "SILVER",   points: 760,  totalSpent: 640000,  visitCount: 6,  lastVisit: "2026-05-30",
+    isActive: false, createdAt: "2026-03-15",
+    notes: "Telefon raqami o'zgardi",
+  },
+];
+
+// ── Initial Loyalty Transactions ──────────────────────────────
+export const INITIAL_LOYALTY_TXN: import("./types").LoyaltyTransaction[] = [
+  { id: "lpt_1", customerId: "cust_1", customerName: "Akbar Toshmatov",   type: "EARN",   points: 285,  description: "Choyxona buyurtmasi — 285 000 so'm",    createdAt: "2026-06-08" },
+  { id: "lpt_2", customerId: "cust_3", customerName: "Jasur Rahimov",     type: "REDEEM", points: -500, description: "500 ball uchun 50 000 so'm chegirma",     createdAt: "2026-06-09" },
+  { id: "lpt_3", customerId: "cust_2", customerName: "Malika Yusupova",   type: "EARN",   points: 80,   description: "Fast-food buyurtmasi — 80 000 so'm",     createdAt: "2026-06-07" },
+  { id: "lpt_4", customerId: "cust_3", customerName: "Jasur Rahimov",     type: "BONUS",  points: 200,  description: "Tug'ilgan kun bonusi 🎂",                  createdAt: "2026-06-01" },
+  { id: "lpt_5", customerId: "cust_5", customerName: "Sanjar Mirzayev",   type: "EARN",   points: 140,  description: "VIP Kafe — 140 000 so'm",                 createdAt: "2026-06-06" },
+];
+
 // ── Initial Discounts ─────────────────────────────────────────
 export const INITIAL_DISCOUNTS: import("./types").Discount[] = [
   {

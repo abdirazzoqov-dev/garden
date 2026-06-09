@@ -9,6 +9,7 @@ import OrdersTab          from "../components/orders";
 import KDSTab             from "../components/kds";
 import DashboardTab       from "../components/dashboard";
 import HRTab              from "../components/hr";
+import CustomersTab        from "../components/customers";
 import ReportsTab          from "../components/reports";
 import DiscountsTab       from "../components/discounts";
 import ManagementTab      from "../components/management";
@@ -131,6 +132,20 @@ export default function ParkCentralApp() {
               products={s.products}
               employees={s.employees}
               stalls={s.stalls}
+            />
+          )}
+
+          {/* Customers */}
+          {s.activeTab === "customers" && (
+            <CustomersTab
+              customers={s.customers}
+              loyaltyHistory={s.loyaltyHistory}
+              onAdd={s.handleAddCustomer}
+              onUpdate={s.handleUpdateCustomer}
+              onDelete={s.handleDeleteCustomer}
+              onToggleActive={s.handleToggleCustomerActive}
+              onAddPoints={s.handleAddLoyaltyPoints}
+              onRedeemPoints={s.handleRedeemLoyaltyPoints}
             />
           )}
 
