@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence } from "motion/react";
+import { Moon }           from "lucide-react";
 import { useAppState }    from "../components/hooks/useAppState";
 import Header             from "../components/Header";
 import NavigationTabs     from "../components/NavigationTabs";
@@ -16,6 +17,8 @@ import DiscountsTab       from "../components/discounts";
 import ManagementTab      from "../components/management";
 import BlueprintTab       from "../components/blueprint";
 import AuthModal          from "../components/AuthModal";
+import ReceiptModal       from "../components/receipt/ReceiptModal";
+import DayCloseModal      from "../components/shift/DayCloseModal";
 
 export default function ParkCentralApp() {
   const s = useAppState();
@@ -50,25 +53,53 @@ export default function ParkCentralApp() {
   return (
     <div className="min-h-screen bg-[#f7f5f2] text-[#283028] pb-16">
 
-      <Header isOnline={s.isOnline} setIsOnline={s.setIsOnline} />
+      {/* ── Header (with dark mode + notifications) ── */}
+      <Header
+        isOnline={s.isOnline}
+        setIsOnline={s.setIsOnline}
+        isDark={s.isDark}
+        onToggleDark={s.toggleDark}
+        notifications={s.notifications}
+        unreadCount={s.unreadCount}
+        onMarkRead={s.markNotifRead}
+        onMarkAllRead={s.markAllNotifsRead}
+        onDismiss={s.dismissNotif}
+        onClearAll={s.clearAllNotifs}
+        onNavigate={(tab) => s.setActiveTab(tab as any)}
+      />
 
+      {/* ── Main ── */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 mt-8">
 
-        <NavigationTabs
-          activeTab={s.activeTab}
-          pendingOrdersCount={s.pendingOrdersCount}
-          kitchenCount={s.orders.filter(
-            (o) => o.status === "CONFIRMED" || o.status === "PREPARING"
-          ).length}
-          onTabChange={(tab) => {
-            s.setActiveTab(tab);
-            if (tab === "dashboard" && !s.aiReport) s.getAiDashboardAdvice();
-          }}
-        />
+        {/* Navigation tabs + Day-close button */}
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div className="flex-1 min-w-0">
+            <NavigationTabs
+              activeTab={s.activeTab}
+              pendingOrdersCount={s.pendingOrdersCount}
+              kitchenCount={s.orders.filter(
+                (o) => o.status === "CONFIRMED" || o.status === "PREPARING"
+              ).length}
+              onTabChange={(tab) => {
+                s.setActiveTab(tab);
+                if (tab === "dashboard" && !s.aiReport) s.getAiDashboardAdvice();
+              }}
+            />
+          </div>
+          {/* Day close button */}
+          <button
+            onClick={() => s.setDayCloseOpen(true)}
+            className="btn btn-sm bg-slate-700 hover:bg-slate-800 text-white border-0 shrink-0 mb-8"
+            title="Smenani yopish"
+          >
+            <Moon className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Smena yopish</span>
+          </button>
+        </div>
 
         <AnimatePresence mode="wait">
 
-          {/* Rastalar — har biri o'z panelida + admin monitoring */}
+          {/* Rastalar panels */}
           {s.activeTab === "stalls" && (
             <StallPanels
               stalls={s.stalls}
@@ -106,7 +137,7 @@ export default function ParkCentralApp() {
             />
           )}
 
-          {/* Global Buyurtmalar */}
+          {/* Global Orders */}
           {s.activeTab === "orders" && (
             <OrdersTab
               stalls={s.stalls}
@@ -234,6 +265,7 @@ export default function ParkCentralApp() {
         </AnimatePresence>
       </main>
 
+      {/* ── Auth modal ── */}
       <AuthModal
         pendingSellerId={s.pendingSellerId}
         pendingActionType={s.pendingActionType}
@@ -246,6 +278,31 @@ export default function ParkCentralApp() {
         onSubmit={s.handleAuthSubmit}
         onCancel={s.closeAuthModal}
       />
+
+      {/* ── Receipt modal ── */}
+      {(s.receiptTransaction || s.receiptOrder) && (
+        <ReceiptModal
+          transaction={s.receiptTransaction}
+          order={s.receiptOrder}
+          onClose={() => { s.setReceiptTransaction(null); s.setReceiptOrder(null); }}
+        />
+      )}
+
+      {/* ── Day close modal ── */}
+      {s.dayCloseOpen && (
+        <DayCloseModal
+          stalls={s.stalls}
+          transactions={s.transactions}
+          orders={s.orders}
+          employees={s.employees}
+          products={s.products}
+          onClose={() => s.setDayCloseOpen(false)}
+          onConfirm={() => {
+            s.pushNotif("Smena yopildi", `Bugungi jami: ${new Intl.NumberFormat().format(s.totalParkRevenue)} so'm`, "success");
+            s.setDayCloseOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }
