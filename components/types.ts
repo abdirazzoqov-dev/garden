@@ -108,7 +108,17 @@ export interface Product {
   stallId: string;
   stallName: string;
   description?: string;
+  barcode?: string;        // EAN-13 / QR code string
   createdAt: string;
+}
+
+// ── Barcode ───────────────────────────────────────────────────
+export interface BarcodeLabel {
+  productId:   string;
+  productName: string;
+  price:       number;
+  barcode:     string;
+  stallName:   string;
 }
 
 // ── Employee ──────────────────────────────────────────────────
@@ -341,4 +351,5 @@ export interface ProductFormData {
   isAvailable: boolean;
   stallId: string;
   description: string;
+  barcode: string;
 }

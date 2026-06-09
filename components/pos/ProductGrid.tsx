@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, AlertTriangle, Package } from "lucide-react";
+import { Plus, AlertTriangle, Package, ScanBarcode } from "lucide-react";
 import { formatNumber } from "../utils";
 import type { Product } from "../types";
 
@@ -62,6 +62,15 @@ export default function ProductGrid({ products, stallId, onAddToCart }: ProductG
                     <h4 className="text-sm font-[700] text-[#1e3d1f] leading-snug mt-0.5">
                       {p.name}
                     </h4>
+                    {/* Barcode badge */}
+                    {p.barcode && (
+                      <div className="flex items-center gap-1 mt-1">
+                        <ScanBarcode className="w-3 h-3 text-[#9daa9e]" />
+                        <span className="text-[9px] font-mono text-[#9daa9e] tracking-wider">
+                          {p.barcode}
+                        </span>
+                      </div>
+                    )}
                   </div>
                   {isLow && (
                     <span className="badge badge-amber shrink-0">

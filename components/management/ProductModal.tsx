@@ -1,10 +1,11 @@
 "use client";
 
-import { X, Package, DollarSign, Layers, Clock, Tag, ImageIcon, Smile } from "lucide-react";
+import { X, Package, DollarSign, Layers, Clock, Tag, Smile, ScanBarcode, RefreshCw, Copy, Check } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect } from "react";
 import type { Stall, Product, ProductFormData, ModalMode, ProductCategory } from "../types";
 import { PRODUCT_CATEGORY_META } from "../constants";
+import { generateEAN13, generateSKU } from "../hooks/useBarcodeScanner";
 
 interface ProductModalProps {
   mode: ModalMode;
@@ -17,7 +18,7 @@ interface ProductModalProps {
 const EMPTY: ProductFormData = {
   name: "", category: "FOOD", price: 0, costPrice: 0,
   stock: 0, minStockAlert: 5, unit: "dona", prepTime: 0,
-  isAvailable: true, stallId: "", description: "",
+  isAvailable: true, stallId: "", description: "", barcode: "",
 };
 
 const CATEGORIES: ProductCategory[] = ["FOOD","DRINK","DESSERT","SNACK","TEA","HOOKAH","TICKET","SOUVENIR","OTHER"];
@@ -41,6 +42,7 @@ export default function ProductModal({ mode, product, stalls, onSave, onClose }:
   const [errors, setErrors] = useState<Partial<Record<keyof ProductFormData, string>>>({});
   const [selectedEmoji, setSelectedEmoji] = useState<string>("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [barcodeCopied, setBarcodeCopied] = useState(false);
 
   useEffect(() => {
     if (mode === "edit" && product) {
@@ -51,8 +53,8 @@ export default function ProductModal({ mode, product, stalls, onSave, onClose }:
         unit: product.unit ?? "dona", prepTime: product.prepTime ?? 0,
         isAvailable: product.isAvailable, stallId: product.stallId,
         description: product.description ?? "",
+        barcode: product.barcode ?? "",
       });
-      // Extract emoji from name if present
       const firstChar = product.name.trim().charAt(0);
       if (/\p{Emoji}/u.test(firstChar)) setSelectedEmoji(firstChar);
       else setSelectedEmoji("");
@@ -62,6 +64,13 @@ export default function ProductModal({ mode, product, stalls, onSave, onClose }:
     }
     setErrors({});
   }, [mode, product, stalls]);
+
+  const handleCopyBarcode = () => {
+    if (!form.barcode) return;
+    navigator.clipboard.writeText(form.barcode);
+    setBarcodeCopied(true);
+    setTimeout(() => setBarcodeCopied(false), 1800);
+  };
 
   const set = <K extends keyof ProductFormData>(k: K, v: ProductFormData[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
@@ -299,6 +308,93 @@ export default function ProductModal({ mode, product, stalls, onSave, onClose }:
                 <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-200
                   ${form.isAvailable ? "left-6" : "left-0.5"}`} />
               </button>
+            </div>
+
+            {/* ── Barcode / QR ── */}
+            <div className="space-y-1.5">
+              <label className="section-label flex items-center gap-1.5">
+                <ScanBarcode className="w-3 h-3" /> Barcode / SKU (ixtiyoriy)
+              </label>
+              <div className="flex gap-2">
+                <input
+                  className="input flex-1 font-mono tracking-wider"
+                  placeholder="masalan: 2001234567890"
+                  value={form.barcode}
+                  onChange={(e) => set("barcode", e.target.value)}
+                />
+                {/* Copy */}
+                {form.barcode && (
+                  <button type="button" onClick={handleCopyBarcode}
+                    className="btn-icon" title="Nusxalash">
+                    {barcodeCopied
+                      ? <Check className="w-4 h-4 text-emerald-500" />
+                      : <Copy  className="w-4 h-4" />
+                    }
+                  </button>
+                )}
+              </div>
+
+              {/* Auto-generate buttons */}
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => set("barcode", generateEAN13())}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#dedad3]
+                             bg-[#f7f5f2] text-xs font-[700] text-[#637063]
+                             hover:border-[#4d8751] hover:text-[#1e3d1f] transition-all"
+                >
+                  <RefreshCw className="w-3 h-3" />
+                  EAN-13 avtogeneratsiya
+                </button>
+                <button
+                  type="button"
+                  onClick={() => set("barcode", generateSKU("PC"))}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#dedad3]
+                             bg-[#f7f5f2] text-xs font-[700] text-[#637063]
+                             hover:border-[#4d8751] hover:text-[#1e3d1f] transition-all"
+                >
+                  <RefreshCw className="w-3 h-3" />
+                  SKU kodi (PC-XXXXX)
+                </button>
+                {form.barcode && (
+                  <button type="button" onClick={() => set("barcode", "")}
+                    className="text-[11px] text-red-500 hover:text-red-700 font-[700]">
+                    Tozalash
+                  </button>
+                )}
+              </div>
+
+              {/* Mini barcode visual preview */}
+              {form.barcode && (
+                <div className="flex items-center gap-3 p-3 bg-[#f7f5f2] rounded-xl border border-[#f0ede8]">
+                  {/* Simplified bar visual */}
+                  <div className="flex items-end gap-px h-8 shrink-0">
+                    {[...form.barcode].slice(0, 20).map((ch, i) => {
+                      const h = ((ch.charCodeAt(0) % 3) + 2) * 8;
+                      return (
+                        <div key={i}
+                          className="bg-[#1e3d1f]"
+                          style={{ width: i % 2 === 0 ? 2 : 1, height: h }}
+                        />
+                      );
+                    })}
+                    <div className="bg-[#1e3d1f]" style={{ width: 2, height: 32 }} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-mono font-[700] text-[#1e3d1f] truncate">
+                      {form.barcode}
+                    </p>
+                    <p className="text-[10px] text-[#637063]">
+                      {/^\d{13}$/.test(form.barcode)
+                        ? "EAN-13 format"
+                        : /^\d{8}$/.test(form.barcode)
+                        ? "EAN-8 format"
+                        : "Maxsus SKU"
+                      }
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Description */}
