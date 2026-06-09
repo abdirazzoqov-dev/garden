@@ -2,25 +2,60 @@
 // PARK CENTRAL — Global TypeScript Type Definitions
 // ============================================================
 
-export type ActiveTab = "pos" | "dashboard" | "hr" | "blueprint";
+export type ActiveTab = "pos" | "dashboard" | "hr" | "management" | "blueprint";
 export type BlueprintSubTab = "prisma" | "api" | "sync";
+export type ManagementSubTab = "stalls" | "products";
 export type PaymentMethod = "CASH" | "CARD" | "MOBILE";
 export type SyncStatus = "SYNCED" | "PENDING";
-export type EmployeeRole = "ADMIN" | "SELLER" | "ATTENDANT" | "MANAGER";
-export type StallType = "STALL" | "ATTRACTION" | "CAFE" | "SERVICE";
+export type EmployeeRole = "ADMIN" | "SELLER" | "ATTENDANT" | "MANAGER" | "CHEF" | "WAITER";
+export type StallType = "STALL" | "ATTRACTION" | "CAFE" | "SERVICE" | "FASTFOOD" | "TEAHOUSE";
+export type StallStatus = "ACTIVE" | "CLOSED" | "MAINTENANCE";
 export type AttendanceType = "KIRISH" | "CHIQISH";
 export type WsEventType = "info" | "warning" | "success";
+export type ProductCategory =
+  | "FOOD"
+  | "DRINK"
+  | "DESSERT"
+  | "SNACK"
+  | "TICKET"
+  | "SOUVENIR"
+  | "TEA"
+  | "HOOKAH"
+  | "OTHER";
 
+// ── Stall ─────────────────────────────────────────────────────
+export interface Stall {
+  id: string;
+  name: string;
+  type: StallType;
+  status: StallStatus;
+  description?: string;
+  openTime?: string;   // e.g. "09:00"
+  closeTime?: string;  // e.g. "22:00"
+  tableCount?: number; // for TEAHOUSE / CAFE
+  floor?: string;      // e.g. "1-qavat", "Ochiq maydon"
+  createdAt: string;
+}
+
+// ── Product ───────────────────────────────────────────────────
 export interface Product {
   id: string;
   name: string;
+  category: ProductCategory;
   price: number;
+  costPrice?: number;   // purchase / production cost
   stock: number;
   minStockAlert: number;
+  unit?: string;        // "dona", "kg", "litr", "porsiya"
+  prepTime?: number;    // minutes – for FASTFOOD / TEAHOUSE
+  isAvailable: boolean;
   stallId: string;
   stallName: string;
+  description?: string;
+  createdAt: string;
 }
 
+// ── Employee ──────────────────────────────────────────────────
 export interface Employee {
   id: string;
   name: string;
@@ -34,12 +69,7 @@ export interface Employee {
   lastCheckOut?: string;
 }
 
-export interface Stall {
-  id: string;
-  name: string;
-  type: StallType;
-}
-
+// ── Transaction ───────────────────────────────────────────────
 export interface TransactionItem {
   productName: string;
   quantity: number;
@@ -59,6 +89,7 @@ export interface Transaction {
   syncStatus: SyncStatus;
 }
 
+// ── Attendance ────────────────────────────────────────────────
 export interface AttendanceLog {
   id: string;
   employeeName: string;
@@ -67,6 +98,7 @@ export interface AttendanceLog {
   time: string;
 }
 
+// ── WebSocket event ───────────────────────────────────────────
 export interface WsEvent {
   id: string;
   time: string;
@@ -74,11 +106,13 @@ export interface WsEvent {
   type: WsEventType;
 }
 
+// ── Cart ──────────────────────────────────────────────────────
 export interface CartItem {
   product: Product;
   quantity: number;
 }
 
+// ── Payroll ───────────────────────────────────────────────────
 export interface PayrollResult {
   dailyBase: number;
   salesVolume: number;
@@ -86,4 +120,33 @@ export interface PayrollResult {
   totalWage: number;
 }
 
+// ── Auth ──────────────────────────────────────────────────────
 export type PendingActionType = "switch_seller" | "check_toggle";
+
+// ── Management modal ──────────────────────────────────────────
+export type ModalMode = "create" | "edit";
+
+export interface StallFormData {
+  name: string;
+  type: StallType;
+  status: StallStatus;
+  description: string;
+  openTime: string;
+  closeTime: string;
+  tableCount: number;
+  floor: string;
+}
+
+export interface ProductFormData {
+  name: string;
+  category: ProductCategory;
+  price: number;
+  costPrice: number;
+  stock: number;
+  minStockAlert: number;
+  unit: string;
+  prepTime: number;
+  isAvailable: boolean;
+  stallId: string;
+  description: string;
+}

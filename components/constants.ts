@@ -1,38 +1,115 @@
 // ============================================================
-// PARK CENTRAL — Static Seed Data & Blueprint Code Constants
+// PARK CENTRAL — Static Seed Data & Constants
 // ============================================================
 
-import type { Stall, Employee, Product, Transaction, AttendanceLog, WsEvent } from "./types";
+import type {
+  Stall, Employee, Product, Transaction, AttendanceLog,
+  WsEvent, StallType, StallStatus, ProductCategory,
+} from "./types";
 
-export const STALLS: Stall[] = [
-  { id: "stall_1", name: "Markaziy Fast-Food Restorani", type: "CAFE" },
-  { id: "stall_2", name: "Muzqaymoq va Shakar-paxta", type: "STALL" },
-  { id: "stall_3", name: "Sirk va Ko'ngilochar Attraksion", type: "ATTRACTION" },
-  { id: "stall_4", name: "Suvenirlar va O'yinchoqlar Markazi", type: "STALL" },
+// ── Stall type metadata ───────────────────────────────────────
+export const STALL_TYPE_META: Record<StallType, { label: string; emoji: string; color: string; bg: string }> = {
+  FASTFOOD:   { label: "Fast-Food",     emoji: "🍔", color: "text-orange-700",  bg: "bg-orange-50  border-orange-200"  },
+  TEAHOUSE:   { label: "Choyxona",      emoji: "🫖", color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200" },
+  CAFE:       { label: "Kafe / Restoran",emoji: "☕", color: "text-amber-700",   bg: "bg-amber-50   border-amber-200"   },
+  STALL:      { label: "Savdo Rastasi", emoji: "🛍️", color: "text-purple-700",  bg: "bg-purple-50  border-purple-200"  },
+  ATTRACTION: { label: "Attraksion",    emoji: "🎢", color: "text-blue-700",    bg: "bg-blue-50    border-blue-200"    },
+  SERVICE:    { label: "Xizmat",        emoji: "🔧", color: "text-slate-700",   bg: "bg-slate-50   border-slate-200"   },
+};
+
+export const STALL_STATUS_META: Record<StallStatus, { label: string; badge: string }> = {
+  ACTIVE:      { label: "Faol",        badge: "badge-green"  },
+  CLOSED:      { label: "Yopiq",       badge: "badge-slate"  },
+  MAINTENANCE: { label: "Ta'mirda",    badge: "badge-amber"  },
+};
+
+export const PRODUCT_CATEGORY_META: Record<ProductCategory, { label: string; emoji: string }> = {
+  FOOD:     { label: "Taom",         emoji: "🍽️" },
+  DRINK:    { label: "Ichimlik",     emoji: "🥤" },
+  DESSERT:  { label: "Desert",       emoji: "🍦" },
+  SNACK:    { label: "Snack",        emoji: "🍿" },
+  TEA:      { label: "Choy",         emoji: "🍵" },
+  HOOKAH:   { label: "Xalyopa",      emoji: "💨" },
+  TICKET:   { label: "Chipta",       emoji: "🎫" },
+  SOUVENIR: { label: "Suvenirlar",   emoji: "🎁" },
+  OTHER:    { label: "Boshqa",       emoji: "📦" },
+};
+
+// ── Initial Stalls ────────────────────────────────────────────
+export const INITIAL_STALLS: Stall[] = [
+  {
+    id: "stall_1", name: "Markaziy Fast-Food",     type: "FASTFOOD",   status: "ACTIVE",
+    description: "Burger, shaurma, hot-dog va ichimliklar",
+    openTime: "09:00", closeTime: "22:00", floor: "Asosiy maydon", createdAt: "2026-01-01",
+  },
+  {
+    id: "stall_2", name: "Bog' Choyxonasi",         type: "TEAHOUSE",   status: "ACTIVE",
+    description: "An'anaviy o'zbek choyxonasi, 20 ta stol",
+    openTime: "08:00", closeTime: "23:00", tableCount: 20, floor: "Ko'l bo'yi", createdAt: "2026-01-01",
+  },
+  {
+    id: "stall_3", name: "Ko'ngilochar Attraksion", type: "ATTRACTION",  status: "ACTIVE",
+    description: "Tsirk, karusel va bola attraksionlari",
+    openTime: "10:00", closeTime: "21:00", floor: "Sharqiy qanot", createdAt: "2026-01-01",
+  },
+  {
+    id: "stall_4", name: "Suvenirlar Markazi",      type: "STALL",       status: "ACTIVE",
+    description: "Esdalik buyumlar, o'yinchoqlar, bayroqlar",
+    openTime: "09:00", closeTime: "21:00", floor: "Kirish qismi", createdAt: "2026-01-01",
+  },
+  {
+    id: "stall_5", name: "Muzqaymoq Dükoni",        type: "STALL",       status: "ACTIVE",
+    description: "Muzqaymoq, shakar-paxta va shirinliklar",
+    openTime: "09:00", closeTime: "21:00", floor: "Asosiy maydon", createdAt: "2026-01-01",
+  },
+  {
+    id: "stall_6", name: "VIP Kafe",                type: "CAFE",        status: "ACTIVE",
+    description: "Premium kafe, 10 ta stol, Wi-Fi",
+    openTime: "10:00", closeTime: "22:00", tableCount: 10, floor: "2-qavat", createdAt: "2026-01-01",
+  },
 ];
 
+// ── Initial Employees ─────────────────────────────────────────
 export const INITIAL_EMPLOYEES: Employee[] = [
   { id: "emp_1", name: "Dilshod Abdirazzokov", role: "MANAGER",   baseSalary: 6500000, bonusPercentage: 2, isCheckedIn: true,  lastCheckIn: "08:30", username: "dilshod", password: "111" },
   { id: "emp_2", name: "Shahzod Alimov",       role: "SELLER",    baseSalary: 3500000, bonusPercentage: 5, isCheckedIn: true,  lastCheckIn: "08:45", username: "shahzod", password: "222" },
   { id: "emp_3", name: "Laylo Karimova",        role: "SELLER",    baseSalary: 3200000, bonusPercentage: 7, isCheckedIn: false,                        username: "laylo",   password: "333" },
   { id: "emp_4", name: "Jamshid Tojiyev",       role: "ATTENDANT", baseSalary: 4000000, bonusPercentage: 4, isCheckedIn: true,  lastCheckIn: "08:50", username: "jamshid", password: "444" },
+  { id: "emp_5", name: "Zulfiya Yusupova",      role: "WAITER",    baseSalary: 2800000, bonusPercentage: 6, isCheckedIn: true,  lastCheckIn: "09:00", username: "zulfiya", password: "555" },
+  { id: "emp_6", name: "Bobur Raximov",         role: "CHEF",      baseSalary: 5000000, bonusPercentage: 3, isCheckedIn: true,  lastCheckIn: "08:00", username: "bobur",   password: "666" },
 ];
 
+// ── Initial Products ──────────────────────────────────────────
 export const INITIAL_PRODUCTS: Product[] = [
-  { id: "prod_1", name: "Sirlangan Burger Klasik",      price: 32000, stock: 45,  minStockAlert: 10, stallId: "stall_1", stallName: "Markaziy Fast-Food Restorani" },
-  { id: "prod_2", name: "Shaurma Mol go'shtli",         price: 38000, stock: 28,  minStockAlert: 8,  stallId: "stall_1", stallName: "Markaziy Fast-Food Restorani" },
-  { id: "prod_3", name: "Coca-Cola 0.5L",               price: 10000, stock: 9,   minStockAlert: 15, stallId: "stall_1", stallName: "Markaziy Fast-Food Restorani" },
-  { id: "prod_4", name: "Muzqaymoq Gilosli",            price: 14000, stock: 3,   minStockAlert: 5,  stallId: "stall_2", stallName: "Muzqaymoq va Shakar-paxta" },
-  { id: "prod_5", name: "Shakar-paxta (Katta vanna)",   price: 12000, stock: 22,  minStockAlert: 6,  stallId: "stall_2", stallName: "Muzqaymoq va Shakar-paxta" },
-  { id: "prod_6", name: "Katta Tsirk Chiptasi",         price: 50000, stock: 120, minStockAlert: 20, stallId: "stall_3", stallName: "Sirk va Ko'ngilochar Attraksion" },
-  { id: "prod_7", name: "Esdalik Bog' Flagi",           price: 25000, stock: 12,  minStockAlert: 5,  stallId: "stall_4", stallName: "Suvenirlar va O'yinchoqlar Markazi" },
+  // Fast-food
+  { id: "prod_1", name: "Sirlangan Burger Klasik", category: "FOOD",    price: 32000, costPrice: 18000, stock: 45,  minStockAlert: 10, unit: "dona",    prepTime: 7,  isAvailable: true,  stallId: "stall_1", stallName: "Markaziy Fast-Food",     description: "Mol go'shtli burger, sous, sabzavot", createdAt: "2026-01-01" },
+  { id: "prod_2", name: "Shaurma Mol go'shtli",    category: "FOOD",    price: 38000, costPrice: 22000, stock: 28,  minStockAlert: 8,  unit: "dona",    prepTime: 8,  isAvailable: true,  stallId: "stall_1", stallName: "Markaziy Fast-Food",     description: "Mol go'shtli shaurma, chili sous",    createdAt: "2026-01-01" },
+  { id: "prod_3", name: "Coca-Cola 0.5L",          category: "DRINK",   price: 10000, costPrice: 6000,  stock: 9,   minStockAlert: 15, unit: "litr",    prepTime: 0,  isAvailable: true,  stallId: "stall_1", stallName: "Markaziy Fast-Food",     description: "Sovutilgan",                          createdAt: "2026-01-01" },
+  { id: "prod_4", name: "Kartoshka Fri (L)",       category: "SNACK",   price: 18000, costPrice: 8000,  stock: 60,  minStockAlert: 12, unit: "porsiya", prepTime: 5,  isAvailable: true,  stallId: "stall_1", stallName: "Markaziy Fast-Food",     description: "Tuzlangan, ketchup bilan",            createdAt: "2026-01-01" },
+  // Choyxona
+  { id: "prod_5", name: "Ko'k Choy (Chinni)",      category: "TEA",     price: 8000,  costPrice: 2000,  stock: 200, minStockAlert: 30, unit: "piyola",  prepTime: 5,  isAvailable: true,  stallId: "stall_2", stallName: "Bog' Choyxonasi",        description: "Arzon, shirin, ko'k choy",            createdAt: "2026-01-01" },
+  { id: "prod_6", name: "Qora Choy + Shirinlik",   category: "TEA",     price: 12000, costPrice: 4000,  stock: 150, minStockAlert: 20, unit: "set",     prepTime: 5,  isAvailable: true,  stallId: "stall_2", stallName: "Bog' Choyxonasi",        description: "Qand-shakar, pechene bilan",          createdAt: "2026-01-01" },
+  { id: "prod_7", name: "Samsa (2 dona)",           category: "FOOD",    price: 16000, costPrice: 7000,  stock: 40,  minStockAlert: 10, unit: "porsiya", prepTime: 0,  isAvailable: true,  stallId: "stall_2", stallName: "Bog' Choyxonasi",        description: "Issiq, qo'y go'shtli samsa",          createdAt: "2026-01-01" },
+  { id: "prod_8", name: "Xalyopa (1 soat)",        category: "HOOKAH",  price: 80000, costPrice: 35000, stock: 15,  minStockAlert: 3,  unit: "dona",    prepTime: 10, isAvailable: true,  stallId: "stall_2", stallName: "Bog' Choyxonasi",        description: "Premium tutun, 5 xil ta'm",          createdAt: "2026-01-01" },
+  // Attraksion
+  { id: "prod_9", name: "Katta Tsirk Chiptasi",    category: "TICKET",  price: 50000, costPrice: 0,     stock: 120, minStockAlert: 20, unit: "dona",    prepTime: 0,  isAvailable: true,  stallId: "stall_3", stallName: "Ko'ngilochar Attraksion", description: "Bolalar va kattalar uchun",           createdAt: "2026-01-01" },
+  { id: "prod_10",name: "Karusel Chiptasi",         category: "TICKET",  price: 20000, costPrice: 0,     stock: 200, minStockAlert: 30, unit: "dona",    prepTime: 0,  isAvailable: true,  stallId: "stall_3", stallName: "Ko'ngilochar Attraksion", description: "5 ta aylanish",                      createdAt: "2026-01-01" },
+  // Suvenirlar
+  { id: "prod_11",name: "Esdalik Bog' Flagi",       category: "SOUVENIR",price: 25000, costPrice: 8000,  stock: 12,  minStockAlert: 5,  unit: "dona",    prepTime: 0,  isAvailable: true,  stallId: "stall_4", stallName: "Suvenirlar Markazi",     description: "24x36 sm, yuvishga chidamli",        createdAt: "2026-01-01" },
+  // Muzqaymoq
+  { id: "prod_12",name: "Muzqaymoq Gilosli",        category: "DESSERT", price: 14000, costPrice: 6000,  stock: 3,   minStockAlert: 5,  unit: "dona",    prepTime: 0,  isAvailable: true,  stallId: "stall_5", stallName: "Muzqaymoq Dükoni",       description: "100ml, giloslisous",                 createdAt: "2026-01-01" },
+  { id: "prod_13",name: "Shakar-paxta (Katta)",     category: "DESSERT", price: 12000, costPrice: 3000,  stock: 22,  minStockAlert: 6,  unit: "dona",    prepTime: 2,  isAvailable: true,  stallId: "stall_5", stallName: "Muzqaymoq Dükoni",       description: "Katta vanna, turli rang",            createdAt: "2026-01-01" },
+  // VIP Kafe
+  { id: "prod_14",name: "Kapuchino",                category: "DRINK",   price: 28000, costPrice: 10000, stock: 50,  minStockAlert: 8,  unit: "stakan",  prepTime: 4,  isAvailable: true,  stallId: "stall_6", stallName: "VIP Kafe",               description: "Italyan arabika, sut ko'pigi",       createdAt: "2026-01-01" },
+  { id: "prod_15",name: "Tiramisu",                 category: "DESSERT", price: 45000, costPrice: 18000, stock: 8,   minStockAlert: 3,  unit: "porsiya", prepTime: 0,  isAvailable: true,  stallId: "stall_6", stallName: "VIP Kafe",               description: "Klassik italyan desert",             createdAt: "2026-01-01" },
 ];
 
+// ── Initial Transactions ──────────────────────────────────────
 export const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "txn_001", amount: 142000, paymentMethod: "CARD",
     employeeId: "emp_2", employeeName: "Shahzod Alimov",
-    stallId: "stall_1", stallName: "Markaziy Fast-Food Restorani",
+    stallId: "stall_1", stallName: "Markaziy Fast-Food",
     items: [
       { productName: "Sirlangan Burger Klasik", quantity: 3, price: 32000 },
       { productName: "Coca-Cola 0.5L",          quantity: 2, price: 10000 },
@@ -41,226 +118,148 @@ export const INITIAL_TRANSACTIONS: Transaction[] = [
     createdAt: "10:14:12", syncStatus: "SYNCED",
   },
   {
-    id: "txn_002", amount: 40000, paymentMethod: "MOBILE",
-    employeeId: "emp_3", employeeName: "Laylo Karimova",
-    stallId: "stall_2", stallName: "Muzqaymoq va Shakar-paxta",
+    id: "txn_002", amount: 52000, paymentMethod: "MOBILE",
+    employeeId: "emp_5", employeeName: "Zulfiya Yusupova",
+    stallId: "stall_2", stallName: "Bog' Choyxonasi",
     items: [
-      { productName: "Shakar-paxta (Katta vanna)", quantity: 2, price: 12000 },
-      { productName: "Muzqaymoq Gilosli",          quantity: 1, price: 14000 },
+      { productName: "Ko'k Choy (Chinni)",    quantity: 2, price: 8000  },
+      { productName: "Samsa (2 dona)",         quantity: 2, price: 16000 },
     ],
     createdAt: "10:05:43", syncStatus: "SYNCED",
   },
   {
     id: "txn_003", amount: 150000, paymentMethod: "CASH",
     employeeId: "emp_4", employeeName: "Jamshid Tojiyev",
-    stallId: "stall_3", stallName: "Sirk va Ko'ngilochar Attraksion",
+    stallId: "stall_3", stallName: "Ko'ngilochar Attraksion",
     items: [{ productName: "Katta Tsirk Chiptasi", quantity: 3, price: 50000 }],
     createdAt: "09:48:21", syncStatus: "SYNCED",
   },
+  {
+    id: "txn_004", amount: 80000, paymentMethod: "CASH",
+    employeeId: "emp_5", employeeName: "Zulfiya Yusupova",
+    stallId: "stall_2", stallName: "Bog' Choyxonasi",
+    items: [{ productName: "Xalyopa (1 soat)", quantity: 1, price: 80000 }],
+    createdAt: "11:20:00", syncStatus: "SYNCED",
+  },
 ];
 
+// ── Initial Attendance ────────────────────────────────────────
 export const INITIAL_ATTENDANCE: AttendanceLog[] = [
   { id: "att_1", employeeName: "Dilshod Abdirazzokov", role: "Menejer",    type: "KIRISH", time: "08:30" },
   { id: "att_2", employeeName: "Shahzod Alimov",       role: "Sotuvchi",   type: "KIRISH", time: "08:45" },
   { id: "att_3", employeeName: "Jamshid Tojiyev",      role: "Nazoratchi", type: "KIRISH", time: "08:50" },
+  { id: "att_4", employeeName: "Zulfiya Yusupova",     role: "Ofitsiant",  type: "KIRISH", time: "09:00" },
+  { id: "att_5", employeeName: "Bobur Raximov",        role: "Oshpaz",     type: "KIRISH", time: "08:00" },
 ];
 
+// ── Initial WS Events ─────────────────────────────────────────
 export const INITIAL_WS_EVENTS: WsEvent[] = [
-  { id: "ws_1", time: "10:14:12", text: "Kassa sotuvi: Shahzod Alimov (Fast-Food) — 142 000 so'm",            type: "success" },
-  { id: "ws_2", time: "10:11:05", text: "[DIQQAT] Muzqaymoq Gilosli zaxirasi kam (3 dona kutilmoqda!)",        type: "warning" },
-  { id: "ws_3", time: "08:50:00", text: "Xodim Jamshid Tojiyev Sirk rastasida ish boshladi (Check-in)",        type: "info"    },
+  { id: "ws_1", time: "11:20:00", text: "Choyxona sotuvi: Zulfiya Yusupova — 80 000 so'm (Xalyopa)",               type: "success" },
+  { id: "ws_2", time: "10:14:12", text: "Fast-Food sotuvi: Shahzod Alimov — 142 000 so'm",                          type: "success" },
+  { id: "ws_3", time: "10:11:05", text: "[DIQQAT] Muzqaymoq Gilosli zaxirasi kritik kam (3 dona qoldi!)",           type: "warning" },
+  { id: "ws_4", time: "08:50:00", text: "Xodim Jamshid Tojiyev attraksion rastasida ish boshladi",                  type: "info"    },
 ];
 
-// ── Blueprint source-code snippets ────────────────────────────────────────────
-
+// ── Blueprint snippets (unchanged) ───────────────────────────
 export const PRISMA_SCHEMA_CODE = `// prisma/schema.prisma
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
 generator client {
   provider = "prisma-client-js"
 }
 
-enum Role          { ADMIN SELLER ATTENDANT MANAGER }
-enum StallType     { STALL ATTRACTION CAFE SERVICE }
+enum Role          { ADMIN MANAGER SELLER ATTENDANT CHEF WAITER }
+enum StallType     { FASTFOOD TEAHOUSE CAFE STALL ATTRACTION SERVICE }
+enum StallStatus   { ACTIVE CLOSED MAINTENANCE }
 enum PaymentMethod { CASH CARD MOBILE }
 enum SyncStatus    { SYNCED PENDING }
-enum AttendanceStatus { PRESENT ABSENT LATE EXCUSED }
+enum ProductCategory { FOOD DRINK DESSERT SNACK TEA HOOKAH TICKET SOUVENIR OTHER }
 
-model User {
-  id               String        @id @default(uuid())
-  email            String        @unique
-  passwordHash     String
-  name             String
-  role             Role          @default(SELLER)
-  baseSalary       Decimal       @db.Decimal(12, 2)
-  bonusPercentage  Decimal       @db.Decimal(5, 2)
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-  sales            Transaction[]
-  attendances      Attendance[]
-  payrolls         Payroll[]
-}
-
-model Location {
-  id        String      @id @default(uuid())
-  name      String      @unique
-  type      StallType   @default(STALL)
-  status    String      @default("ACTIVE")
-  createdAt DateTime    @default(now())
-  products  Product[]
-  sales     Transaction[]
+model Stall {
+  id          String      @id @default(uuid())
+  name        String
+  type        StallType
+  status      StallStatus @default(ACTIVE)
+  description String?
+  openTime    String?
+  closeTime   String?
+  tableCount  Int?
+  floor       String?
+  createdAt   DateTime    @default(now())
+  products    Product[]
+  sales       Transaction[]
+  tables      Table[]
 }
 
 model Product {
-  id            String   @id @default(uuid())
+  id            String          @id @default(uuid())
   name          String
-  price         Decimal  @db.Decimal(12, 2)
-  stock         Int      @default(0)
-  minStockAlert Int      @default(5)
-  locationId    String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  location      Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  category      ProductCategory
+  price         Decimal         @db.Decimal(12,2)
+  costPrice     Decimal?        @db.Decimal(12,2)
+  stock         Int             @default(0)
+  minStockAlert Int             @default(5)
+  unit          String          @default("dona")
+  prepTime      Int             @default(0)
+  isAvailable   Boolean         @default(true)
+  description   String?
+  stallId       String
+  stall         Stall           @relation(fields:[stallId], references:[id], onDelete:Cascade)
+  createdAt     DateTime        @default(now())
 }
 
 model Transaction {
   id            String        @id @default(uuid())
-  amount        Decimal       @db.Decimal(12, 2)
+  amount        Decimal       @db.Decimal(12,2)
   paymentMethod PaymentMethod @default(CASH)
   employeeId    String
-  locationId    String
+  stallId       String
   items         Json
   syncStatus    SyncStatus    @default(SYNCED)
   createdAt     DateTime      @default(now())
-  employee      User          @relation(fields: [employeeId], references: [id])
-  location      Location      @relation(fields: [locationId], references: [id])
-  @@index([employeeId])
-  @@index([locationId])
-  @@index([createdAt])
-}
-
-model Attendance {
-  id         String           @id @default(uuid())
-  employeeId String
-  checkIn    DateTime         @default(now())
-  checkOut   DateTime?
-  status     AttendanceStatus @default(PRESENT)
-  createdAt  DateTime         @default(now())
-  employee   User             @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  @@index([employeeId])
-}
-
-model Payroll {
-  id          String   @id @default(uuid())
-  employeeId  String
-  periodStart DateTime
-  periodEnd   DateTime
-  basePay     Decimal  @db.Decimal(12, 2)
-  bonusPay    Decimal  @db.Decimal(12, 2)
-  totalPaid   Decimal  @db.Decimal(12, 2)
-  paidAt      DateTime @default(now())
-  status      String   @default("PAID")
-  employee    User     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  @@index([employeeId])
+  employee      User          @relation(fields:[employeeId], references:[id])
+  stall         Stall         @relation(fields:[stallId],    references:[id])
 }`;
 
 export const API_DOCS_CODE = `================================================================
-1. AUTHENTICATION (JWT)
+REST API — Park Central v3.0
 ================================================================
-POST /api/auth/login
-Request:  { "email": "shahzod@park.uz", "password": "..." }
-Response: { "token": "<JWT>", "user": { "id", "name", "role" } }
 
-================================================================
-2. POS — SALES GATEWAY
-================================================================
-POST /api/pos/sale          — online sale, decrements stock
-POST /api/pos/sync-bulk     — batch offline→online sync
+POST   /api/auth/login
+GET    /api/stalls
+POST   /api/stalls
+PUT    /api/stalls/:id
+DELETE /api/stalls/:id
 
-POST /api/pos/sale
-Headers: Authorization: Bearer <token>
-Body:
-{
-  "amount": 142000,
-  "paymentMethod": "CARD",
-  "stallId": "stall_1",
-  "items": [
-    { "productId": "prod_1", "name": "Burger", "quantity": 3, "price": 32000 }
-  ]
-}
-Response 201:
-{ "success": true, "transactionId": "txn_xxx", "newStock": [...] }
+GET    /api/products?stallId=
+POST   /api/products
+PUT    /api/products/:id
+DELETE /api/products/:id
 
-POST /api/pos/sync-bulk
-Body: { "transactions": [ ...OfflineTransaction[] ] }
-Response 200: { "success": true, "syncedCount": 4 }
+POST   /api/pos/sale
+POST   /api/pos/sync-bulk
 
-================================================================
-3. ATTENDANCE & PAYROLL
-================================================================
-POST /api/attendance/check-in
-Body:     { "employeeId": "emp_2" }
-Response: { "attendanceId": "att_91", "checkIn": "2026-06-09T08:30:00Z" }
+POST   /api/attendance/check-in
+POST   /api/attendance/check-out
+GET    /api/payroll/calculate?employeeId=&from=&to=
 
-GET /api/payroll/calculate
-  ?employeeId=emp_2&periodStart=2026-06-01&periodEnd=2026-06-09
-Response:
-{
-  "baseCompensation": 1050000,
-  "totalCommissionBonus": 85000,
-  "payrollTotal": 1135000
-}
-
-================================================================
-4. SOCKET.IO — REAL-TIME CHANNELS
-================================================================
-Server → Client events:
+WebSocket channels:
   stall_sale_registered  { stallId, amount, employeeName }
   stock_warning          { productId, name, currentStock }
+  order_status_changed   { orderId, status }
   employee_check_in      { employeeId, time }`;
 
 export const SYNC_ENGINE_CODE = `// hooks/useOfflineSyncEngine.ts
-import { useState } from "react";
-
-export interface OfflineTransaction {
-  id: string;
-  amount: number;
-  paymentMethod: string;
-  employeeId: string;
-  stallId: string;
-  items: unknown[];
-  createdAt: string;
-}
-
 export function useOfflineSyncEngine() {
-  const [isSyncing, setIsSyncing] = useState(false);
-
-  const syncWithServer = async (queue: OfflineTransaction[]) => {
-    if (queue.length === 0) return { success: true, count: 0 };
-    setIsSyncing(true);
-
-    try {
-      const res = await fetch("/api/pos/sync-bulk", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ transactions: queue }),
-      });
-
-      if (!res.ok) throw new Error("Sync API error");
-
-      const result = await res.json();
-      return { success: true, count: result.syncedCount };
-
-    } catch (err) {
-      console.error("Sync failed:", err);
-      return { success: false, error: err };
-    } finally {
-      setIsSyncing(false);
-    }
+  const syncWithServer = async (queue) => {
+    const res = await fetch("/api/pos/sync-bulk", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ transactions: queue }),
+    });
+    return res.json();
   };
-
-  return { syncWithServer, isSyncing };
+  return { syncWithServer };
 }`;

@@ -1,6 +1,6 @@
 "use client";
 
-import { ShoppingCart, BarChart3, Users, Code2 } from "lucide-react";
+import { ShoppingCart, BarChart3, Users, Settings, Code2 } from "lucide-react";
 import type { ActiveTab } from "./types";
 
 interface NavigationTabsProps {
@@ -11,42 +11,21 @@ interface NavigationTabsProps {
 const TABS: {
   id: ActiveTab;
   label: string;
-  shortLabel: string;
+  short: string;
   icon: React.ReactNode;
   accent?: boolean;
 }[] = [
-  {
-    id: "pos",
-    label: "POS Kassa",
-    shortLabel: "POS",
-    icon: <ShoppingCart className="w-4 h-4" />,
-  },
-  {
-    id: "dashboard",
-    label: "Analitika",
-    shortLabel: "Analitika",
-    icon: <BarChart3 className="w-4 h-4" />,
-  },
-  {
-    id: "hr",
-    label: "HR & Payroll",
-    shortLabel: "HR",
-    icon: <Users className="w-4 h-4" />,
-  },
-  {
-    id: "blueprint",
-    label: "Blueprint",
-    shortLabel: "Dev",
-    icon: <Code2 className="w-4 h-4" />,
-    accent: true,
-  },
+  { id: "pos",        label: "POS Kassa",    short: "POS",       icon: <ShoppingCart className="w-4 h-4" /> },
+  { id: "dashboard",  label: "Analitika",    short: "Analitika", icon: <BarChart3    className="w-4 h-4" /> },
+  { id: "hr",         label: "HR & Payroll", short: "HR",        icon: <Users        className="w-4 h-4" /> },
+  { id: "management", label: "Boshqaruv",    short: "Boshqaruv", icon: <Settings     className="w-4 h-4" /> },
+  { id: "blueprint",  label: "Blueprint",    short: "Dev",       icon: <Code2        className="w-4 h-4" />, accent: true },
 ];
 
 export default function NavigationTabs({ activeTab, onTabChange }: NavigationTabsProps) {
   return (
     <div className="mb-8">
-      {/* ── Tab strip ── */}
-      <div className="flex items-center gap-1 p-1 bg-[#f0ede8] rounded-2xl border border-[#dedad3] w-fit">
+      <div className="flex flex-wrap items-center gap-1 p-1 bg-[#f0ede8] rounded-2xl border border-[#dedad3] w-fit">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -66,13 +45,11 @@ export default function NavigationTabs({ activeTab, onTabChange }: NavigationTab
             >
               {tab.icon}
               <span className="hidden sm:inline">{tab.label}</span>
-              <span className="sm:hidden">{tab.shortLabel}</span>
+              <span className="sm:hidden">{tab.short}</span>
             </button>
           );
         })}
       </div>
-
-      {/* ── Divider ── */}
       <div className="mt-4 border-b border-[#dedad3]" />
     </div>
   );

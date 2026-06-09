@@ -2,122 +2,127 @@
 
 import { AnimatePresence } from "motion/react";
 import { useAppState } from "../components/hooks/useAppState";
-import Header from "../components/Header";
+import Header         from "../components/Header";
 import NavigationTabs from "../components/NavigationTabs";
-import POSTab from "../components/pos";
-import DashboardTab from "../components/dashboard";
-import HRTab from "../components/hr";
-import BlueprintTab from "../components/blueprint";
-import AuthModal from "../components/AuthModal";
+import POSTab         from "../components/pos";
+import DashboardTab   from "../components/dashboard";
+import HRTab          from "../components/hr";
+import ManagementTab  from "../components/management";
+import BlueprintTab   from "../components/blueprint";
+import AuthModal      from "../components/AuthModal";
 
 export default function ParkCentralApp() {
-  const state = useAppState();
+  const s = useAppState();
 
   return (
-    <div className="min-h-screen bg-[#F8F9F5] text-[#2D3A2D] font-sans pb-16">
+    <div className="min-h-screen bg-[#f7f5f2] text-[#283028] pb-16">
 
-      {/* ── Top navigation bar ─────────────────────────────── */}
-      <Header isOnline={state.isOnline} setIsOnline={state.setIsOnline} />
+      {/* ── Header ── */}
+      <Header isOnline={s.isOnline} setIsOnline={s.setIsOnline} />
 
-      {/* ── Main content ───────────────────────────────────── */}
+      {/* ── Main ── */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 mt-8">
 
-        {/* Tab navigation */}
         <NavigationTabs
-          activeTab={state.activeTab}
+          activeTab={s.activeTab}
           onTabChange={(tab) => {
-            state.setActiveTab(tab);
-            if (tab === "dashboard" && !state.aiReport) {
-              state.getAiDashboardAdvice();
-            }
+            s.setActiveTab(tab);
+            if (tab === "dashboard" && !s.aiReport) s.getAiDashboardAdvice();
           }}
         />
 
-        {/* Tab content with exit animations */}
         <AnimatePresence mode="wait">
 
-          {state.activeTab === "pos" && (
+          {s.activeTab === "pos" && (
             <POSTab
-              stalls={state.stalls}
-              employees={state.employees}
-              products={state.products}
-              cart={state.cart}
-              wsEvents={state.wsEvents}
-              syncQueue={state.syncQueue}
-              selectedStallId={state.selectedStallId}
-              activeSellerId={state.activeSellerId}
-              paymentMethod={state.paymentMethod}
-              isOnline={state.isOnline}
-              onSelectStall={(id) => {
-                state.setSelectedStallId(id);
-                // clear cart when switching stalls (handled in hook's setSelectedStallId side-effect
-                // but we also reset cart here for safety)
-              }}
-              onOpenSellerAuth={(empId) => state.openAuthModal(empId, "switch_seller")}
-              onAddToCart={state.handleAddToCart}
-              onUpdateCartQty={state.handleUpdateCartQty}
-              onSetPayment={state.setPaymentMethod}
-              onCheckout={state.handleCheckout}
-              onSyncNow={() => {
-                state.setIsOnline(true);
-                setTimeout(() => state.runOfflineSync(), 100);
-              }}
+              stalls={s.stalls.filter(st => st.status === "ACTIVE")}
+              employees={s.employees}
+              products={s.products.filter(p => p.isAvailable)}
+              cart={s.cart}
+              wsEvents={s.wsEvents}
+              syncQueue={s.syncQueue}
+              selectedStallId={s.selectedStallId}
+              activeSellerId={s.activeSellerId}
+              paymentMethod={s.paymentMethod}
+              isOnline={s.isOnline}
+              onSelectStall={s.setSelectedStallId}
+              onOpenSellerAuth={(id) => s.openAuthModal(id, "switch_seller")}
+              onAddToCart={s.handleAddToCart}
+              onUpdateCartQty={s.handleUpdateCartQty}
+              onSetPayment={s.setPaymentMethod}
+              onCheckout={s.handleCheckout}
+              onSyncNow={() => { s.setIsOnline(true); setTimeout(() => s.runOfflineSync(), 100); }}
             />
           )}
 
-          {state.activeTab === "dashboard" && (
+          {s.activeTab === "dashboard" && (
             <DashboardTab
-              stalls={state.stalls}
-              products={state.products}
-              transactions={state.transactions}
-              totalRevenue={state.totalParkRevenue}
-              totalProductsSold={state.totalProductsSold}
-              criticalStockCount={state.criticalStockCount}
-              syncQueueLength={state.syncQueue.length}
-              isSyncing={state.isSyncing}
-              syncLogs={state.syncLogs}
-              aiReport={state.aiReport}
-              isGeneratingAi={state.isGeneratingAi}
-              onRunSync={state.runOfflineSync}
-              onGetAiAdvice={state.getAiDashboardAdvice}
+              stalls={s.stalls}
+              products={s.products}
+              transactions={s.transactions}
+              totalRevenue={s.totalParkRevenue}
+              totalProductsSold={s.totalProductsSold}
+              criticalStockCount={s.criticalStockCount}
+              syncQueueLength={s.syncQueue.length}
+              isSyncing={s.isSyncing}
+              syncLogs={s.syncLogs}
+              aiReport={s.aiReport}
+              isGeneratingAi={s.isGeneratingAi}
+              onRunSync={s.runOfflineSync}
+              onGetAiAdvice={s.getAiDashboardAdvice}
             />
           )}
 
-          {state.activeTab === "hr" && (
+          {s.activeTab === "hr" && (
             <HRTab
-              employees={state.employees}
-              attendanceLogs={state.attendanceLogs}
-              calculatePayroll={state.calculatePayroll}
-              onOpenAuth={state.openAuthModal}
+              employees={s.employees}
+              attendanceLogs={s.attendanceLogs}
+              calculatePayroll={s.calculatePayroll}
+              onOpenAuth={s.openAuthModal}
             />
           )}
 
-          {state.activeTab === "blueprint" && (
+          {s.activeTab === "management" && (
+            <ManagementTab
+              subTab={s.managementSubTab}
+              onSubTabChange={s.setManagementSubTab}
+              stalls={s.stalls}
+              products={s.products}
+              onAddStall={s.handleAddStall}
+              onUpdateStall={s.handleUpdateStall}
+              onDeleteStall={s.handleDeleteStall}
+              onAddProduct={s.handleAddProduct}
+              onUpdateProduct={s.handleUpdateProduct}
+              onDeleteProduct={s.handleDeleteProduct}
+              onToggleProductAvailable={s.handleToggleProductAvailable}
+            />
+          )}
+
+          {s.activeTab === "blueprint" && (
             <BlueprintTab
-              subTab={state.blueprintSubTab}
-              onSubTabChange={state.setBlueprintSubTab}
-              copiedText={state.copiedText}
-              onCopy={state.copyToClipboard}
+              subTab={s.blueprintSubTab}
+              onSubTabChange={s.setBlueprintSubTab}
+              copiedText={s.copiedText}
+              onCopy={s.copyToClipboard}
             />
           )}
 
         </AnimatePresence>
       </main>
 
-      {/* ── Auth modal (global overlay) ─────────────────────── */}
+      {/* ── Auth modal ── */}
       <AuthModal
-        pendingSellerId={state.pendingSellerId}
-        pendingActionType={state.pendingActionType}
-        employees={state.employees}
-        authUsername={state.authUsername}
-        authPassword={state.authPassword}
-        authError={state.authError}
-        onUsernameChange={state.setAuthUsername}
-        onPasswordChange={state.setAuthPassword}
-        onSubmit={state.handleAuthSubmit}
-        onCancel={state.closeAuthModal}
+        pendingSellerId={s.pendingSellerId}
+        pendingActionType={s.pendingActionType}
+        employees={s.employees}
+        authUsername={s.authUsername}
+        authPassword={s.authPassword}
+        authError={s.authError}
+        onUsernameChange={s.setAuthUsername}
+        onPasswordChange={s.setAuthPassword}
+        onSubmit={s.handleAuthSubmit}
+        onCancel={s.closeAuthModal}
       />
-
     </div>
   );
 }
